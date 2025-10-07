@@ -1,8 +1,3 @@
-/**
- * ItemDetailsModal Component
- * Modal for viewing and editing item details
- */
-
 import React, { useState, useRef } from "react";
 import { View } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";

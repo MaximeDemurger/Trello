@@ -55,7 +55,6 @@ export const styles = StyleSheet.create((theme) => ({
   chipTextActive: {
     color: theme.colors.white,
   },
-  // Members section styles (aligned with ItemDetails styles)
   addMemberButton: {
     flexDirection: "row",
     alignItems: "center",

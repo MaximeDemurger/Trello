@@ -1,12 +1,11 @@
 import { FooterAction } from "../FooterAction/FooterAction";
 import { BottomSheet } from "../BottomSheet/BottomSheet";
-import { FC, useState } from "react";
+import { FC } from "react";
 import { View, Pressable } from "react-native";
 import { Text } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { styles } from "./CreateBoardModal.styles";
 
-// Create Board Form Component
 type CreateBoardFormProps = {
   title: string;
   description: string;
@@ -17,7 +16,6 @@ type CreateBoardFormProps = {
   visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
-  onCancel: () => void;
 };
 
 export const CreateBoardModal: FC<CreateBoardFormProps> = ({
@@ -32,16 +30,16 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
   onSubmit,
 }) => {
   const COLOR_OPTIONS = [
-    "#FFE4E6", // rose-100
-    "#FEF3C7", // amber-100
-    "#E0E7FF", // indigo-100
-    "#EDE9FE", // violet-100
-    "#E0F2FE", // sky-100
-    "#DCFCE7", // green-100
-    "#D1FAE5", // emerald-100
-    "#FCE7F3", // pink-100
-    "#E9D5FF", // violet-200
-    "#BFDBFE", // blue-200
+    "#FFE4E6",
+    "#FEF3C7",
+    "#E0E7FF",
+    "#EDE9FE",
+    "#E0F2FE",
+    "#DCFCE7",
+    "#D1FAE5",
+    "#FCE7F3",
+    "#E9D5FF",
+    "#BFDBFE",
   ];
   return (
     <BottomSheet

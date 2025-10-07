@@ -1,7 +1,3 @@
-/**
- * Core data types for the BoardFlow application
- */
-
 export type Member = {
   id: string
   name: string
@@ -20,7 +16,6 @@ export type Item = {
   order: number
   createdAt: string
   updatedAt: string
-  // Optional fields
   assignedMembers?: Member[]
   dueDate?: string
   priority?: 'low' | 'medium' | 'high'
@@ -40,7 +35,7 @@ export type Board = {
   title: string
   description: string
   color: string
-  members?: string[] // Member IDs
+  members?: string[]
   createdAt: string
   updatedAt: string
 }

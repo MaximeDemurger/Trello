@@ -1,8 +1,3 @@
-/**
- * BoardDetailScreen
- * Displays board details with drag-and-drop functionality
- */
-
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,7 +18,6 @@ import { useDraggingContext } from "@/components/DragDropProvider/dragDropContex
 
 type BoardDetailRouteProp = RouteProp<RootStackParamList, "BoardDetail">;
 
-// Inner component that has access to drag context
 const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   const navigation = useNavigation();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -47,7 +41,6 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
     return unsubscribe;
   }, [boardId]);
 
-  // Register scroll view ref with drag context
   useEffect(() => {
     setScrollViewRef(scrollViewRef.current);
     return () => setScrollViewRef(null);

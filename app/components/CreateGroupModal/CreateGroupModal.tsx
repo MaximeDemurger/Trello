@@ -1,8 +1,3 @@
-/**
- * CreateGroupModal Component
- * Modal for creating new groups with ref-based control
- */
-
 import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";

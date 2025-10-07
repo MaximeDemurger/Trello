@@ -1,8 +1,3 @@
-/**
- * BoardListScreen
- * Displays all boards with smooth animations
- */
-
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,14 +22,12 @@ export const BoardListScreen: React.FC = () => {
   const [newBoardColor, setNewBoardColor] = useState("#EDE9FE");
 
   useEffect(() => {
-    // Initialize with default data if empty
     if (boards.length === 0) {
       initializeDefaultData();
     }
   }, []);
 
   useEffect(() => {
-    // Subscribe to store changes
     const unsubscribe = useBoardStore.subscribe(() => {
       setBoards(getAllBoardsWithGroups());
     });
@@ -130,7 +123,6 @@ export const BoardListScreen: React.FC = () => {
         onDescriptionChange={setNewBoardDescription}
         color={newBoardColor}
         onColorChange={setNewBoardColor}
-        onCancel={() => setIsCreateModalVisible(false)}
       />
     </SafeAreaView>
   );

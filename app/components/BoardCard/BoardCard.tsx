@@ -1,12 +1,6 @@
-/**
- * BoardCard Component
- * Displays a board in the board list with animations
- */
-
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import type { Board } from "@/types/board.types";
 
 type BoardCardProps = {
@@ -14,8 +8,6 @@ type BoardCardProps = {
   itemCount: number;
   onPress: () => void;
 };
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export const BoardCard: React.FC<BoardCardProps> = ({
   board,
@@ -47,9 +39,6 @@ const styles = StyleSheet.create((theme) => ({
     borderColor: theme.colors.borderLight,
     ...theme.shadows.md,
     overflow: "hidden",
-  },
-  content: {
-    padding: theme.spacing.xl,
   },
   title: {
     fontSize: theme.typography.fontSize.xxl,

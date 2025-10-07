@@ -1,12 +1,8 @@
-/**
- * Zustand store for managing boards, groups, and items
- * Persisted with MMKV for fast local storage
- */
-
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { zustandStorage } from "@/storage/mmkv";
 import { generateId, generateTimestamp } from "@/utils/id";
+import { BOARD_COLORS, MEMBER_COLORS } from "@/constants";
 import type {
   Board,
   Group,
@@ -29,21 +25,14 @@ interface BoardState {
 }
 
 interface BoardActions {
-  // Board actions
   createBoard: (input: CreateBoardInput) => Board;
   deleteBoard: (boardId: string) => void;
   updateBoard: (boardId: string, updates: Partial<Board>) => void;
-
-  // Member actions
   createMember: (input: { name: string; email?: string }) => Member;
   addMemberToBoard: (boardId: string, memberId: string) => void;
-
-  // Group actions
   createGroup: (input: CreateGroupInput) => Group;
   deleteGroup: (groupId: string) => void;
   updateGroup: (groupId: string, updates: Partial<Group>) => void;
-
-  // Item actions
   createItem: (input: CreateItemInput) => Item;
   getItem: (itemId: string) => Item | undefined;
   deleteItem: (itemId: string) => void;
@@ -51,43 +40,15 @@ interface BoardActions {
   updateItemAssignees: (itemId: string, assignees: Member[]) => void;
   moveItem: (input: MoveItemInput) => void;
   archiveItem: (itemId: string) => void;
-
-  // Getters
   getBoardWithGroups: (boardId: string) => BoardWithGroups | null;
   getAllBoardsWithGroups: () => BoardWithGroups[];
-
-  // Utilities
   initializeDefaultData: () => void;
   clearAll: () => void;
 }
 
 type BoardStore = BoardState & BoardActions;
 
-const BOARD_COLORS = [
-  "#FFE4E6", // rose-100
-  "#FEF3C7", // amber-100
-  "#E0E7FF", // indigo-100
-  "#EDE9FE", // violet-100
-  "#E0F2FE", // sky-100
-  "#DCFCE7", // green-100
-  "#D1FAE5", // emerald-100
-  "#FCE7F3", // pink-100
-  "#E9D5FF", // violet-200
-  "#BFDBFE", // blue-200
-];
-
-const MEMBER_COLORS = [
-  "#6366f1",
-  "#ec4899",
-  "#10b981",
-  "#f59e0b",
-  "#8b5cf6",
-  "#ef4444",
-  "#3b82f6",
-  "#14b8a6",
-  "#f97316",
-  "#a855f7",
-];
+ 
 
 const getInitials = (name: string): string => {
   return name
@@ -184,8 +145,6 @@ export const useBoardStore = create<BoardStore>()(
   persist(
     (set, get) => ({
       ...initialState,
-
-      // Board actions
       createBoard: (input) => {
         const board: Board = {
           id: generateId(),
@@ -220,8 +179,6 @@ export const useBoardStore = create<BoardStore>()(
           ),
         }));
       },
-
-      // Member actions
       createMember: ({ name, email }) => {
         const member: Member = {
           id: generateId(),
@@ -251,8 +208,6 @@ export const useBoardStore = create<BoardStore>()(
           }),
         }));
       },
-
-      // Group actions
       createGroup: (input) => {
         const state = get();
         const boardGroups = state.groups.filter(
@@ -297,8 +252,6 @@ export const useBoardStore = create<BoardStore>()(
           ),
         }));
       },
-
-      // Item actions
       createItem: (input) => {
         const state = get();
         const groupItems = state.items.filter(
@@ -350,7 +303,7 @@ export const useBoardStore = create<BoardStore>()(
       updateItemAssignees: (itemId, assignees) => {
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === itemId ? { ...i, assignees, updatedAt: generateTimestamp() } : i
+            i.id === itemId ? { ...i, assignedMembers: assignees, updatedAt: generateTimestamp() } : i
           ),
         }));
       },
@@ -396,11 +349,8 @@ export const useBoardStore = create<BoardStore>()(
       },
 
       archiveItem: (itemId) => {
-        // For now, archiving is the same as deleting
         get().deleteItem(itemId);
       },
-
-      // Getters
       getBoardWithGroups: (boardId) => {
         const state = get();
         const board = state.boards.find((b) => b.id === boardId);
@@ -421,7 +371,6 @@ export const useBoardStore = create<BoardStore>()(
           groups,
         };
       },
-
       getAllBoardsWithGroups: () => {
         const state = get();
         return state.boards.map((board) => {
@@ -441,13 +390,9 @@ export const useBoardStore = create<BoardStore>()(
           };
         });
       },
-
-      // Utilities
       initializeDefaultData: () => {
         const state = get();
-        if (state.boards.length > 0) return; // Already initialized
-
-        // Create sample members (default users)
+        if (state.boards.length > 0) return;
         const names = [
           "Maxime Demurger",
           "Elon Musk",
@@ -480,19 +425,13 @@ export const useBoardStore = create<BoardStore>()(
         }));
 
         set({ members: sampleMembers });
-
-        // Create sample board
         const board = get().createBoard({
           title: "My First Board",
           description: "Welcome to BoardFlow! This is your first board.",
         });
-
-        // Add some members to the board
         get().updateBoard(board.id, { 
           members: sampleMembers.slice(0, 5).map((m) => m.id) 
         });
-
-        // Create sample groups
         const todoGroup = get().createGroup({
           title: "To Do",
           boardId: board.id,
@@ -507,16 +446,13 @@ export const useBoardStore = create<BoardStore>()(
           title: "Done",
           boardId: board.id,
         });
-
-        // Create sample items with enhanced fields
         const item1 = get().createItem({
           title: "Welcome to BoardFlow",
           description: "Try dragging this card to another column!",
           groupId: todoGroup.id,
           boardId: board.id,
         });
-        // Add optional fields
-        const maxime = sampleMembers[0]; // Ensure one default member on first card
+        const maxime = sampleMembers[0];
         get().updateItem({
           id: item1.id,
           priority: "high",

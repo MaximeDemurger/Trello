@@ -1,14 +1,8 @@
-/**
- * AddMemberModal Component
- * Modal for adding members to items
- */
-
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import {
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { BottomSheet } from "../BottomSheet/BottomSheet";
@@ -22,7 +16,6 @@ type AddMemberModalProps = {
   visible: boolean;
   onClose: () => void;
   onClosed?: () => void;
-  // When itemId is not provided, the modal works in selection mode
   initialSelectedMembers?: Member[];
   onConfirm?: (members: Member[]) => void;
 };
@@ -64,7 +57,6 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
   }, [visible]);
 
   const handleClose = () => {
-    // In selection mode (no itemId), return selected members once
     if (!itemId && onConfirm && !hasConfirmedRef.current) {
       hasConfirmedRef.current = true;
       onConfirm(assignedMemberIds);

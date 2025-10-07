@@ -1,13 +1,3 @@
-/**
- * GroupColumn Component
- * Displays a column of items with drag-and-drop support
- * Features:
- * - Drop zone registration for each position
- * - Placeholder gaps showing insertion point
- * - Column highlighting when hovered
- * - Vertical auto-scroll
- */
-
 import React, { useEffect, useRef } from "react";
 import { Text, View, Pressable, FlatList } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
@@ -32,7 +22,6 @@ type GroupColumnProps = {
   boardColor?: string;
 };
 
-// Drop zone placeholder component
 const DropZonePlaceholder: React.FC<{
   groupId: string;
   position: number;
@@ -50,7 +39,6 @@ const DropZonePlaceholder: React.FC<{
   }, [isActive]);
 
   useEffect(() => {
-    // Measure and register drop zone (re-measures when remeasureTrigger changes)
     const timer = setTimeout(() => {
       containerRef.current?.measureInWindow((x, y, width, height) => {
         onLayout({
@@ -105,7 +93,6 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   const containerRef = useRef<View>(null);
   const isHovered = hoveredGroupId === group.id;
 
-  // Animated column highlight
   const animatedContainerStyle = useAnimatedStyle(() => ({
     borderColor: withTiming(isHovered ? "#6366f1" : "#e5e7eb", {
       duration: 200,
@@ -114,7 +101,6 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
     transform: [{ scale: withTiming(isHovered ? 1.02 : 1, { duration: 200 }) }],
   }));
 
-  // Generate list data with drop zones
   const renderData = React.useMemo(() => {
     const data: Array<{
       type: "dropzone" | "item";
@@ -122,11 +108,7 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
       item?: any;
       position?: number;
     }> = [];
-
-    // Add drop zone at position 0 (top)
     data.push({ type: "dropzone", id: `dropzone-${group.id}-0`, position: 0 });
-
-    // Add items with drop zones between them
     group.items.forEach((item, index) => {
       data.push({ type: "item", id: item.id, item });
       data.push({
@@ -144,7 +126,6 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   };
 
   useEffect(() => {
-    // Cleanup drop zones when component unmounts
     return () => {
       for (let i = 0; i <= group.items.length; i++) {
         unregisterDropZone(group.id, i);
@@ -181,7 +162,6 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
     );
   };
 
-  // Compute adaptive background/border based on board color
   const parseHex = (hex?: string): { r: number; g: number; b: number } | null => {
     if (!hex) return null;
     const clean = hex.replace('#', '');
@@ -209,7 +189,6 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   const adjustColor = (hex?: string, amount: number = 0): string | undefined => {
     const rgb = parseHex(hex);
     if (!rgb) return hex;
-    // amount: -1 .. 1, negative darkens, positive lightens
     const { r, g, b } = rgb;
     const adjust = (channel: number) =>
       amount >= 0

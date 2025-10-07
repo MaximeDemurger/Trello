@@ -1,8 +1,3 @@
-/**
- * CreateItemModal Component
- * Modal for creating new items with ref-based control
- */
-
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
