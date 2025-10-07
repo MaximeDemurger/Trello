@@ -24,6 +24,7 @@ export const BoardListScreen: React.FC = () => {
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [newBoardTitle, setNewBoardTitle] = useState("");
   const [newBoardDescription, setNewBoardDescription] = useState("");
+  const [newBoardColor, setNewBoardColor] = useState("#EDE9FE");
 
   useEffect(() => {
     // Initialize with default data if empty
@@ -51,10 +52,12 @@ export const BoardListScreen: React.FC = () => {
       createBoard({
         title: newBoardTitle.trim(),
         description: newBoardDescription.trim(),
+        color: newBoardColor,
       });
 
       setNewBoardTitle("");
       setNewBoardDescription("");
+      setNewBoardColor("#EDE9FE");
       setIsCreateModalVisible(false);
     }
   };
@@ -125,6 +128,8 @@ export const BoardListScreen: React.FC = () => {
         description={newBoardDescription}
         onTitleChange={setNewBoardTitle}
         onDescriptionChange={setNewBoardDescription}
+        color={newBoardColor}
+        onColorChange={setNewBoardColor}
         onCancel={() => setIsCreateModalVisible(false)}
       />
     </SafeAreaView>
@@ -143,7 +148,6 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: theme.spacing.xl,
     paddingTop: theme.spacing.lg,
     paddingBottom: theme.spacing.xl,
-    backgroundColor: theme.colors.white,
     ...theme.shadows.sm,
   },
   title: {

@@ -54,7 +54,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
     <BottomSheet
       visible={visible}
       onClose={handleClose}
-      snapPoints={["50%"]}
+      snapPoints={["80%"]}
       index={1}
       footerComponent={() => (
         <FooterAction

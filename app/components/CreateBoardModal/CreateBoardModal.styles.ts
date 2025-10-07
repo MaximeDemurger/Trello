@@ -77,4 +77,22 @@ export const styles = StyleSheet.create((theme) => ({
   disabledButton: {
     opacity: 0.5,
   },
+  colorSection: {
+    marginBottom: theme.spacing.lg,
+  },
+  colorGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.md,
+  },
+  colorSwatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  colorSwatchSelected: {
+    borderColor: theme.colors.gray900,
+  },
 }));

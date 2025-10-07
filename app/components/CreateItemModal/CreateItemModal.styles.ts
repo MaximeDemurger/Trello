@@ -55,4 +55,35 @@ export const styles = StyleSheet.create((theme) => ({
   chipTextActive: {
     color: theme.colors.white,
   },
+  // Members section styles (aligned with ItemDetails styles)
+  addMemberButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  membersList: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: -theme.spacing.xs,
+  },
+  memberAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: theme.colors.white,
+  },
+  memberAvatarText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.white,
+  },
+  addMemberText: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.gray600,
+    fontWeight: theme.typography.fontWeight.medium,
+  },
 }));

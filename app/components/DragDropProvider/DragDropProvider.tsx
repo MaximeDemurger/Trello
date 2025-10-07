@@ -67,7 +67,6 @@ export const DragDropProvider = ({
       x: zone.x + scrollOffsetRef.current,
     };
     dropZonesRef.current.set(key, absoluteZone);
-    debugLog('📍 Registered drop zone:', key, 'at absolute x:', absoluteZone.x, 'scrollOffset:', scrollOffsetRef.current);
   }, []);
 
   const unregisterDropZone = useCallback((groupId: string, position: number) => {

@@ -34,6 +34,10 @@ interface BoardActions {
   deleteBoard: (boardId: string) => void;
   updateBoard: (boardId: string, updates: Partial<Board>) => void;
 
+  // Member actions
+  createMember: (input: { name: string; email?: string }) => Member;
+  addMemberToBoard: (boardId: string, memberId: string) => void;
+
   // Group actions
   createGroup: (input: CreateGroupInput) => Group;
   deleteGroup: (groupId: string) => void;
@@ -44,6 +48,7 @@ interface BoardActions {
   getItem: (itemId: string) => Item | undefined;
   deleteItem: (itemId: string) => void;
   updateItem: (input: UpdateItemInput) => void;
+  updateItemAssignees: (itemId: string, assignees: Member[]) => void;
   moveItem: (input: MoveItemInput) => void;
   archiveItem: (itemId: string) => void;
 
@@ -59,12 +64,16 @@ interface BoardActions {
 type BoardStore = BoardState & BoardActions;
 
 const BOARD_COLORS = [
-  "#6366f1",
-  "#ec4899",
-  "#10b981",
-  "#f59e0b",
-  "#8b5cf6",
-  "#ef4444",
+  "#FFE4E6", // rose-100
+  "#FEF3C7", // amber-100
+  "#E0E7FF", // indigo-100
+  "#EDE9FE", // violet-100
+  "#E0F2FE", // sky-100
+  "#DCFCE7", // green-100
+  "#D1FAE5", // emerald-100
+  "#FCE7F3", // pink-100
+  "#E9D5FF", // violet-200
+  "#BFDBFE", // blue-200
 ];
 
 const MEMBER_COLORS = [
@@ -182,7 +191,7 @@ export const useBoardStore = create<BoardStore>()(
           id: generateId(),
           title: input.title,
           description: input.description,
-          color: BOARD_COLORS[Math.floor(Math.random() * BOARD_COLORS.length)],
+          color: input.color ?? BOARD_COLORS[Math.floor(Math.random() * BOARD_COLORS.length)],
           createdAt: generateTimestamp(),
           updatedAt: generateTimestamp(),
         };
@@ -209,6 +218,37 @@ export const useBoardStore = create<BoardStore>()(
               ? { ...b, ...updates, updatedAt: generateTimestamp() }
               : b
           ),
+        }));
+      },
+
+      // Member actions
+      createMember: ({ name, email }) => {
+        const member: Member = {
+          id: generateId(),
+          name,
+          email,
+          initials: getInitials(name),
+          color: getMemberColor(name),
+        };
+
+        set((state) => ({ members: [...state.members, member] }));
+        return member;
+      },
+
+      addMemberToBoard: (boardId, memberId) => {
+        set((state) => ({
+          boards: state.boards.map((b) => {
+            if (b.id !== boardId) return b;
+            const currentMembers = b.members ?? [];
+            if (currentMembers.includes(memberId)) {
+              return { ...b, updatedAt: generateTimestamp() };
+            }
+            return {
+              ...b,
+              members: [...currentMembers, memberId],
+              updatedAt: generateTimestamp(),
+            };
+          }),
         }));
       },
 
@@ -278,7 +318,6 @@ export const useBoardStore = create<BoardStore>()(
           order: maxOrder + 1,
           createdAt: generateTimestamp(),
           updatedAt: generateTimestamp(),
-          assignee: input.assignee,
           assignedMembers: input.assignedMembers,
           dueDate: input.dueDate,
           priority: input.priority,
@@ -304,6 +343,14 @@ export const useBoardStore = create<BoardStore>()(
             i.id === input.id
               ? { ...i, ...input, updatedAt: generateTimestamp() }
               : i
+          ),
+        }));
+      },
+
+      updateItemAssignees: (itemId, assignees) => {
+        set((state) => ({
+          items: state.items.map((i) =>
+            i.id === itemId ? { ...i, assignees, updatedAt: generateTimestamp() } : i
           ),
         }));
       },
@@ -469,12 +516,12 @@ export const useBoardStore = create<BoardStore>()(
           boardId: board.id,
         });
         // Add optional fields
-        const maximeId = sampleMembers[0]?.id; // Ensure one default member on first card
+        const maxime = sampleMembers[0]; // Ensure one default member on first card
         get().updateItem({
           id: item1.id,
           priority: "high",
           labels: ["Getting Started", "Documentation"],
-          assignedMembers: maximeId ? [maximeId] : [],
+          assignedMembers: maxime ? [maxime] : [],
         });
 
         const item2 = get().createItem({
@@ -486,7 +533,6 @@ export const useBoardStore = create<BoardStore>()(
         get().updateItem({
           id: item2.id,
           priority: "medium",
-          assignee: "You",
         });
 
         const item3 = get().createItem({
@@ -498,7 +544,6 @@ export const useBoardStore = create<BoardStore>()(
         get().updateItem({
           id: item3.id,
           priority: "high",
-          assignee: "Developer",
           dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           labels: ["Feature", "In Progress"],
         });

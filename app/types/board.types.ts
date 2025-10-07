@@ -21,8 +21,7 @@ export type Item = {
   createdAt: string
   updatedAt: string
   // Optional fields
-  assignee?: string
-  assignedMembers?: string[] // Member IDs
+  assignedMembers?: Member[]
   dueDate?: string
   priority?: 'low' | 'medium' | 'high'
   labels?: string[]
@@ -57,6 +56,7 @@ export type GroupWithItems = Group & {
 export type CreateBoardInput = {
   title: string
   description: string
+  color?: string
 }
 
 export type CreateGroupInput = {
@@ -69,8 +69,7 @@ export type CreateItemInput = {
   description: string
   groupId: string
   boardId: string
-  assignee?: string
-  assignedMembers?: string[]
+  assignedMembers?: Member[]
   dueDate?: string
   priority?: 'low' | 'medium' | 'high'
   labels?: string[]

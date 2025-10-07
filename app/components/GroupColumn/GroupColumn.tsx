@@ -29,6 +29,7 @@ type GroupColumnProps = {
   onDeleteItem: (itemId: string) => void;
   onArchiveItem: (itemId: string) => void;
   onAddItem: (groupId: string) => void;
+  boardColor?: string;
 };
 
 // Drop zone placeholder component
@@ -90,6 +91,7 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   onDeleteItem,
   onArchiveItem,
   onAddItem,
+  boardColor,
 }) => {
   const {
     draggingTaskId,
@@ -179,25 +181,80 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
     );
   };
 
+  // Compute adaptive background/border based on board color
+  const parseHex = (hex?: string): { r: number; g: number; b: number } | null => {
+    if (!hex) return null;
+    const clean = hex.replace('#', '');
+    const full = clean.length === 3
+      ? clean.split('').map((c) => c + c).join('')
+      : clean;
+    const int = parseInt(full, 16);
+    if (Number.isNaN(int)) return null;
+    return {
+      r: (int >> 16) & 255,
+      g: (int >> 8) & 255,
+      b: int & 255,
+    };
+  };
+
+  const toHex = (r: number, g: number, b: number): string => {
+    const c = (n: number) => {
+      const v = Math.max(0, Math.min(255, Math.round(n)));
+      const s = v.toString(16).padStart(2, '0');
+      return s;
+    };
+    return `#${c(r)}${c(g)}${c(b)}`;
+  };
+
+  const adjustColor = (hex?: string, amount: number = 0): string | undefined => {
+    const rgb = parseHex(hex);
+    if (!rgb) return hex;
+    // amount: -1 .. 1, negative darkens, positive lightens
+    const { r, g, b } = rgb;
+    const adjust = (channel: number) =>
+      amount >= 0
+        ? channel + (255 - channel) * amount
+        : channel * (1 + amount);
+    return toHex(adjust(r), adjust(g), adjust(b));
+  };
+
+  const luminance = (hex?: string): number | undefined => {
+    const rgb = parseHex(hex);
+    if (!rgb) return undefined;
+    return 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+  };
+
+  const lum = luminance(boardColor);
+  const isLight = lum === undefined ? true : lum > 186;
+  const adaptiveBackground = boardColor
+    ? adjustColor(boardColor, isLight ? -0.06 : 0.12)
+    : undefined;
+  const adaptiveBorder = boardColor
+    ? adjustColor(boardColor, isLight ? -0.14 : 0.22)
+    : undefined;
+
   return (
     <Animated.View
       ref={containerRef}
       entering={FadeIn.duration(400)}
-      style={[styles.container, animatedContainerStyle]}
+      style={[
+        styles.container,
+        animatedContainerStyle,
+        adaptiveBackground ? { backgroundColor: adaptiveBackground } : null,
+        adaptiveBorder ? { borderColor: adaptiveBorder } : null,
+      ]}
     >
+      <View style={styles.header}>
+        <Text style={styles.title}>{group.title}</Text>
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{group.items.length}</Text>
+        </View>
+      </View>
       <FlatList
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         data={renderData}
-        ListHeaderComponent={() => (
-          <View style={styles.header}>
-            <Text style={styles.title}>{group.title}</Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{group.items.length}</Text>
-            </View>
-          </View>
-        )}
         ListFooterComponent={() => (
           <Pressable
             onPress={() => onAddItem(group.id)}
@@ -239,8 +296,6 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.columnBackground,
     borderRadius: theme.borderRadius.xl,
     marginRight: theme.spacing.lg,
-    maxHeight: "100%",
-    borderWidth: 1,
     borderColor: theme.colors.columnBorder,
   },
   header: {

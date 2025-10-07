@@ -5,13 +5,16 @@
 
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { BottomSheet } from "../BottomSheet/BottomSheet";
+import { AddMemberModal } from "../AddMemberModal/AddMemberModal";
 import { useBoardStore } from "@/stores/useBoardStore";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { styles } from "./CreateItemModal.styles";
 import { FooterAction } from "@/components/FooterAction/FooterAction";
+import { Member } from "@/types/board.types";
 
 type CreateItemModalProps = {
   boardId: string;
@@ -31,7 +34,8 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
   const insets = useSafeAreaInsets();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assignee, setAssignee] = useState("");
+  const [assignee, setAssignee] = useState<Member[]>([]);
+  const [isMemberVisible, setIsMemberVisible] = useState(false);
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high" | undefined>(undefined);
   const [labelsText, setLabelsText] = useState("");
@@ -42,7 +46,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
     onClose();
     setTitle("");
     setDescription("");
-    setAssignee("");
+    setAssignee([]);
     setDueDate("");
     setPriority(undefined);
     setLabelsText("");
@@ -55,7 +59,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
         description: description.trim(),
         groupId,
         boardId,
-        assignee: assignee.trim() || undefined,
+        assignedMembers: assignee,
         dueDate: dueDate.trim() || undefined,
         priority,
         labels: labelsText
@@ -77,7 +81,7 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
     <BottomSheet
       visible={visible}
       onClose={handleClose}
-      index={1}
+      index={0}
       footerComponent={() => (
         <FooterAction
           onClose={handleClose}
@@ -86,7 +90,6 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
           submitLabel="Create"
         />
       )}
-      snapPoints={["80%"]}
     >
       <View style={styles.container}>
         <Text style={styles.title}>Create Item</Text>
@@ -115,14 +118,31 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Assignee</Text>
-          <BottomSheetTextInput
-            style={styles.input}
-            value={assignee}
-            onChangeText={setAssignee}
-            placeholder="Assignee name (optional)"
-            placeholderTextColor="#9ca3af"
-          />
+          <Text style={styles.label}>Members</Text>
+          <Pressable
+            onPress={() => setIsMemberVisible(true)}
+            style={({ pressed }) => [styles.addMemberButton, pressed && { opacity: 0.8 }]}
+          >
+            <View style={styles.membersList}>
+              {assignee.length > 0 ? (
+                assignee.slice(0, 5).map((member) => (
+                  <View key={member.id} style={[styles.memberAvatar, { backgroundColor: member.color }]}>
+                    <Text style={styles.memberAvatarText}>{member.initials}</Text>
+                  </View>
+                ))
+              ) : (
+                <Ionicons name="person-add-outline" size={20} color="#6b7280" />
+              )}
+              {assignee.length > 5 && (
+                <View style={[styles.memberAvatar, { backgroundColor: "#6b7280" }]}>
+                  <Text style={styles.memberAvatarText}>+{assignee.length - 5}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.addMemberText}>
+              {assignee.length > 0 ? "Manage members" : "Add members"}
+            </Text>
+          </Pressable>
         </View>
 
         <View style={styles.inputContainer}>
@@ -164,6 +184,13 @@ export const CreateItemModal: React.FC<CreateItemModalProps> = ({
           />
         </View>
       </View>
+      <AddMemberModal
+        boardId={boardId}
+        visible={isMemberVisible}
+        onClose={() => setIsMemberVisible(false)}
+        initialSelectedMembers={assignee}
+        onConfirm={(members) => setAssignee(members)}
+      />
     </BottomSheet>
   );
 };

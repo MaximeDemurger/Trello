@@ -1,7 +1,7 @@
 import { FooterAction } from "../FooterAction/FooterAction";
 import { BottomSheet } from "../BottomSheet/BottomSheet";
 import { FC, useState } from "react";
-import { View } from "react-native";
+import { View, Pressable } from "react-native";
 import { Text } from "react-native";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { styles } from "./CreateBoardModal.styles";
@@ -12,6 +12,8 @@ type CreateBoardFormProps = {
   description: string;
   onTitleChange: (text: string) => void;
   onDescriptionChange: (text: string) => void;
+  color: string;
+  onColorChange: (color: string) => void;
   visible: boolean;
   onClose: () => void;
   onSubmit: () => void;
@@ -23,10 +25,24 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
   description,
   onTitleChange,
   onDescriptionChange,
+  color,
+  onColorChange,
   visible,
   onClose,
   onSubmit,
 }) => {
+  const COLOR_OPTIONS = [
+    "#FFE4E6", // rose-100
+    "#FEF3C7", // amber-100
+    "#E0E7FF", // indigo-100
+    "#EDE9FE", // violet-100
+    "#E0F2FE", // sky-100
+    "#DCFCE7", // green-100
+    "#D1FAE5", // emerald-100
+    "#FCE7F3", // pink-100
+    "#E9D5FF", // violet-200
+    "#BFDBFE", // blue-200
+  ];
   return (
     <BottomSheet
       visible={visible}
@@ -56,6 +72,7 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
           />
         </View>
 
+
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <BottomSheetTextInput
@@ -67,6 +84,25 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
             multiline
             numberOfLines={4}
           />
+        </View>
+
+        <View style={[styles.inputContainer, styles.colorSection]}>
+          <Text style={styles.label}>Background color</Text>
+          <View style={styles.colorGrid}>
+            {COLOR_OPTIONS.map((c) => (
+              <Pressable
+                key={c}
+                accessibilityRole="button"
+                accessibilityLabel={`Select color ${c}`}
+                onPress={() => onColorChange(c)}
+                style={[
+                  styles.colorSwatch,
+                  { backgroundColor: c },
+                  color === c && styles.colorSwatchSelected,
+                ]}
+              />
+            ))}
+          </View>
         </View>
       </View>
     </BottomSheet>

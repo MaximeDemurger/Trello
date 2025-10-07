@@ -42,7 +42,6 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,
     marginHorizontal: theme.spacing.xl,
-    marginVertical: theme.spacing.md,
     borderWidth: 1,
     padding: theme.spacing.xl,
     borderColor: theme.colors.borderLight,

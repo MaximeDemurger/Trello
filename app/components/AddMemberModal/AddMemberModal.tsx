@@ -3,17 +3,18 @@
  * Modal for adding members to items
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { View, Text, Pressable } from "react-native";
 import {
   BottomSheetScrollView,
-  BottomSheetTextInput,
 } from "@gorhom/bottom-sheet";
+import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { BottomSheet } from "../BottomSheet/BottomSheet";
 import { useBoardStore } from "@/stores/useBoardStore";
 import { styles } from "./AddMemberModal.styles";
+import { Member } from "@/types/board.types";
 
 type AddMemberModalProps = {
   boardId: string;
@@ -21,6 +22,9 @@ type AddMemberModalProps = {
   visible: boolean;
   onClose: () => void;
   onClosed?: () => void;
+  // When itemId is not provided, the modal works in selection mode
+  initialSelectedMembers?: Member[];
+  onConfirm?: (members: Member[]) => void;
 };
 
 export const AddMemberModal: React.FC<AddMemberModalProps> = ({
@@ -29,65 +33,71 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
   visible,
   onClose,
   onClosed,
+  initialSelectedMembers,
+  onConfirm,
 }) => {
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const getItem = useBoardStore((state) => state.getItem);
-  const updateItem = useBoardStore((state) => state.updateItem);
-  const getBoardWithGroups = useBoardStore((state) => state.getBoardWithGroups);
   const members = useBoardStore((state) => state.members);
+  const assignedMemberIdsStore = useBoardStore((state) => {
+    if (!itemId) return undefined as Member[] | undefined;
+    return state.items.find((i) => i.id === itemId)?.assignedMembers;
+  });
 
+  const initialAssigned: Member[] = useMemo(() => {
+    if (itemId) return assignedMemberIdsStore ?? [];
+    return initialSelectedMembers ?? [];
+  }, [itemId, assignedMemberIdsStore, initialSelectedMembers]);
+
+  const [assignedMemberIds, setAssignedMemberIds] = useState<Member[]>(initialAssigned);
+  const [nonAssignedMemberIds, setNonAssignedMemberIds] = useState<Member[]>(
+    members.filter((m) => !initialAssigned.some((a) => a.id === m.id))
+  );
+  const [newMemberName, setNewMemberName] = useState("");
+  const updateItem = useBoardStore((state) => state.updateItem);
+
+
+  const hasConfirmedRef = useRef(false);
   useEffect(() => {
     if (visible) {
-      setSearchQuery("");
+      hasConfirmedRef.current = false;
     }
   }, [visible]);
 
   const handleClose = () => {
+    // In selection mode (no itemId), return selected members once
+    if (!itemId && onConfirm && !hasConfirmedRef.current) {
+      hasConfirmedRef.current = true;
+      onConfirm(assignedMemberIds);
+    }
     onClose();
-    setSearchQuery("");
     if (onClosed) onClosed();
   };
 
-  const item = itemId ? getItem(itemId) : undefined;
-  const board = getBoardWithGroups(boardId);
+  const addMember = (member: Member) => {
+    const current = assignedMemberIds;
+    if (current.find((m) => m.id === member.id)) return;
 
-  const itemMembers = members.filter((m) =>
-    item?.assignedMembers?.includes(m.id)
-  );
-
-  const boardMembers = members.filter(
-    (m) =>
-      board?.members?.includes(m.id) && !item?.assignedMembers?.includes(m.id)
-  );
-
-  const filteredBoardMembers = boardMembers.filter(
-    (m) =>
-      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.email?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const addMember = (memberId: string) => {
-    if (!item) return;
-    const current = item.assignedMembers ?? [];
-    if (current.includes(memberId)) return;
-
-    updateItem({ id: item.id, assignedMembers: [...current, memberId] });
+    setAssignedMemberIds((prev) => [...prev, member]);
+    setNonAssignedMemberIds((prev) => prev.filter((m) => m.id !== member.id));
+    if (itemId) {
+      updateItem({ id: itemId, assignedMembers: [...current, member] });
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const removeMember = (memberId: string) => {
-    if (!item) return;
-    const current = item.assignedMembers ?? [];
-    updateItem({
-      id: item.id,
-      assignedMembers: current.filter((id) => id !== memberId),
-    });
+  const removeMember = (member: Member) => {
+    const current = assignedMemberIds;
+    const updated = current.filter((m) => m.id !== member.id);
+    if (itemId) {
+      updateItem({ id: itemId, assignedMembers: updated });
+    }
+    setAssignedMemberIds(updated);
+    setNonAssignedMemberIds((prev) => [member, ...prev]);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   return (
-    <BottomSheet visible={visible} onClose={handleClose} snapPoints={["100%"]}>
+    <BottomSheet visible={visible} onClose={handleClose} snapPoints={["100%"]} stackBehavior="push">
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Members</Text>
@@ -101,27 +111,17 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
             <Ionicons name="close" size={24} color="#6b7280" />
           </Pressable>
         </View>
-
-        <BottomSheetTextInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search members"
-          style={styles.searchInput}
-          placeholderTextColor="#9ca3af"
-        />
-
         <BottomSheetScrollView
           style={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {/* Card members */}
-          {itemMembers.length > 0 && (
+          {assignedMemberIds.length > 0 && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Card members</Text>
-              {itemMembers.map((member) => (
+              {assignedMemberIds.map((member) => (
                 <Pressable
                   key={member.id}
-                  onPress={() => removeMember(member.id)}
+                  onPress={() => removeMember(member)}
                   style={({ pressed }) => [
                     styles.memberRow,
                     pressed && styles.memberRowPressed,
@@ -135,19 +135,18 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
                     </View>
                     <Text style={styles.memberName}>{member.name}</Text>
                   </View>
-                  <Ionicons name="close" size={20} color="#6b7280" />
+                  <Ionicons name="close" size={20} color="#6b7280" onPress={() => removeMember(member)} />
                 </Pressable>
               ))}
             </View>
           )}
 
-          {/* Board members */}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Board members</Text>
-            {filteredBoardMembers.map((member) => (
+            {nonAssignedMemberIds.map((member) => (
               <Pressable
                 key={member.id}
-                onPress={() => addMember(member.id)}
+                onPress={() => addMember(member)}
                 style={({ pressed }) => [
                   styles.memberRow,
                   pressed && styles.memberRowPressed,
@@ -163,13 +162,6 @@ export const AddMemberModal: React.FC<AddMemberModalProps> = ({
                 </View>
               </Pressable>
             ))}
-            {filteredBoardMembers.length === 0 && (
-              <Text style={styles.emptyText}>
-                {searchQuery
-                  ? "No members found"
-                  : "No board members available"}
-              </Text>
-            )}
           </View>
         </BottomSheetScrollView>
       </View>

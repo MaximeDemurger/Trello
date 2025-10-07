@@ -37,9 +37,6 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
   const getBoardWithGroups = useBoardStore((state) => state.getBoardWithGroups);
 
   const [isMemberVisible, setIsMemberVisible] = useState(false);
-  const sheetApiRef = useRef<{
-    expandTo: (index: number) => void;
-  } | null>(null);
 
   const handleClose = () => {
     onClose();
@@ -62,9 +59,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
     <BottomSheet
       visible={visible}
       onClose={handleClose}
-      onReady={(api) => {
-        sheetApiRef.current = api;
-      }}
+      index={0}
       footerComponent={() => <FooterActions onDelete={handleDelete} />}
     >
       <View style={styles.container}>
@@ -80,14 +75,14 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
             itemId={item.id}
             createdAt={item.createdAt}
             updatedAt={item.updatedAt}
-            assignee={item.assignee}
+            assignee={item.assignedMembers?.[0]?.name}
             dueDate={item.dueDate}
             priority={item.priority}
           />
 
           <MembersSection
             itemId={item.id}
-            memberIds={item.assignedMembers ?? []}
+            memberIds={item.assignedMembers?.map((m) => m.id) ?? []}
             onOpenMemberModal={() => setIsMemberVisible(true)}
           />
 
@@ -105,9 +100,6 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({
         itemId={item.id}
         visible={isMemberVisible}
         onClose={() => setIsMemberVisible(false)}
-        onClosed={() => {
-          sheetApiRef.current?.expandTo(1);
-        }}
       />
     </BottomSheet>
   );

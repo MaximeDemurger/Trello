@@ -86,7 +86,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: board.color }]} edges={["top"]}>
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <Pressable
           onPress={() => navigation.goBack()}
@@ -151,6 +151,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
             <GroupColumn
               key={group.id}
               group={group}
+              boardColor={board.color}
               onItemPress={handleItemPress}
               onDeleteItem={handleDeleteItem}
               onArchiveItem={handleArchiveItem}

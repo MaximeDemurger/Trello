@@ -173,14 +173,14 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
         )}
       </View>
 
-      {item.assignee && (
+      {item.assignedMembers && (
         <View
           style={[
             styles.avatar,
-            { backgroundColor: getAvatarColor(item.assignee) },
+            { backgroundColor: getAvatarColor(item.assignedMembers.map((m) => m.name).join(",")) },
           ]}
         >
-          <Text style={styles.avatarText}>{getInitials(item.assignee)}</Text>
+          <Text style={styles.avatarText}>{getInitials(item.assignedMembers.map((m) => m.name).join(",") || "")}</Text>
         </View>
       )}
     </View>
