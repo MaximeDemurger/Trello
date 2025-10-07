@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+ios
+.github
+android
+.eslintrc.js
+babel.config.js

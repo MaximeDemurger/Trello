@@ -1,0 +1,286 @@
+import { StyleSheet } from "react-native-unistyles";
+
+export const styles = StyleSheet.create((theme) => ({
+  container: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing.xl,
+    paddingRight: theme.spacing.xs,
+  },
+  title: {
+    fontSize: theme.typography.fontSize.xxl,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.gray900,
+    flex: 1,
+    letterSpacing: -0.5,
+  },
+  closeButton: {
+    width: 36,
+    height: 36,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.gray100,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: theme.spacing.md,
+  },
+  content: {
+    flex: 1,
+  },
+  section: {
+    marginBottom: theme.spacing.md,
+    backgroundColor: theme.colors.white,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.borderLight,
+    ...theme.shadows.sm,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: theme.spacing.md,
+  },
+  sectionTitle: {
+    fontSize: theme.typography.fontSize.base,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.gray900,
+    marginLeft: theme.spacing.sm,
+  },
+  formField: {
+    marginBottom: theme.spacing.lg,
+  },
+  inputLabel: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.gray600,
+    marginBottom: theme.spacing.xs,
+    fontWeight: theme.typography.fontWeight.medium,
+  },
+  input: {
+    backgroundColor: theme.colors.gray50,
+    borderWidth: 1,
+    borderColor: theme.colors.gray200,
+    borderRadius: theme.borderRadius.md,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    color: theme.colors.gray900,
+  },
+  titleInput: {
+    fontSize: theme.typography.fontSize.xxl,
+    fontWeight: theme.typography.fontWeight.bold,
+  },
+  textarea: {
+    minHeight: 96,
+    textAlignVertical: "top" as const,
+  },
+  mutedText: {
+    fontSize: theme.typography.fontSize.base,
+    color: theme.colors.gray500,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+  },
+  chipsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+  },
+  chip: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.gray100,
+  },
+  chipActive: {
+    backgroundColor: theme.colors.primary,
+  },
+  chipText: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.gray800,
+    fontWeight: theme.typography.fontWeight.semiBold,
+  },
+  chipTextActive: {
+    color: theme.colors.white,
+  },
+  chipDanger: {
+    backgroundColor: "#fee2e2",
+  },
+  chipDangerText: {
+    color: "#991b1b",
+  },
+  labelsEditor: {
+    gap: theme.spacing.md,
+  },
+  labelsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+  },
+  labelEditable: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+    backgroundColor: theme.colors.gray100,
+    gap: theme.spacing.xs,
+  },
+  labelEditableText: {
+    fontSize: theme.typography.fontSize.xs,
+    color: theme.colors.gray900,
+    fontWeight: theme.typography.fontWeight.semiBold,
+  },
+  labelRemove: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: theme.colors.gray200,
+  },
+  primaryButton: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.primary,
+  },
+  primaryButtonText: {
+    color: theme.colors.white,
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.bold,
+  },
+  secondaryButton: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.gray200,
+  },
+  secondaryButtonText: {
+    color: theme.colors.gray900,
+    fontSize: theme.typography.fontSize.sm,
+    fontWeight: theme.typography.fontWeight.semiBold,
+  },
+  descriptionText: {
+    fontSize: theme.typography.fontSize.base,
+    color: theme.colors.gray900,
+    lineHeight: 24,
+    backgroundColor: theme.colors.gray50,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+  },
+  detailRow: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.gray50,
+    marginBottom: theme.spacing.xs,
+  },
+  detailRowPressable: {
+    backgroundColor: theme.colors.gray100,
+  },
+  detailLabel: {
+    fontSize: theme.typography.fontSize.xs,
+    color: theme.colors.gray500,
+    fontWeight: theme.typography.fontWeight.medium,
+    textTransform: "uppercase" as const,
+    letterSpacing: 0.5,
+    marginBottom: theme.spacing.xs,
+  },
+  detailValue: {
+    fontSize: theme.typography.fontSize.base,
+    color: theme.colors.gray900,
+    fontWeight: theme.typography.fontWeight.semiBold,
+  },
+  priorityBadge: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+  },
+  priorityHigh: {
+    backgroundColor: "#fee2e2",
+  },
+  priorityMedium: {
+    backgroundColor: "#fef3c7",
+  },
+  priorityLow: {
+    backgroundColor: "#dbeafe",
+  },
+  priorityText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.gray900,
+  },
+  labelsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: theme.spacing.sm,
+  },
+  label: {
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.full,
+  },
+  labelText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontWeight: theme.typography.fontWeight.semiBold,
+    color: theme.colors.white,
+  },
+  footer: {
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.gray200,
+  },
+  deleteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: theme.spacing.md,
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.gray100,
+    gap: theme.spacing.sm,
+  },
+  deleteButtonText: {
+    fontSize: theme.typography.fontSize.base,
+    fontWeight: theme.typography.fontWeight.semiBold,
+    color: theme.colors.error,
+  },
+  addMemberButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+  },
+  membersList: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: -theme.spacing.xs,
+  },
+  memberAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: theme.colors.white,
+  },
+  memberAvatarText: {
+    fontSize: theme.typography.fontSize.xs,
+    fontWeight: theme.typography.fontWeight.bold,
+    color: theme.colors.white,
+  },
+  addMemberText: {
+    fontSize: theme.typography.fontSize.sm,
+    color: theme.colors.gray600,
+    fontWeight: theme.typography.fontWeight.medium,
+  },
+}));
