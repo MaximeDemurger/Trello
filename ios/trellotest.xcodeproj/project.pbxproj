@@ -355,12 +355,15 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.trellotest;
-				PRODUCT_NAME = trellotest;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maximedemurger.trellotest";
+				PRODUCT_NAME = "trellotest";
 				SWIFT_OBJC_BRIDGING_HEADER = "trellotest/trellotest-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				DEVELOPMENT_TEAM = KX76256Q5Q;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = trellotest/trellotest.entitlements;
 			};
 			name = Debug;
 		};
@@ -384,11 +387,14 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.trellotest;
-				PRODUCT_NAME = trellotest;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maximedemurger.trellotest";
+				PRODUCT_NAME = "trellotest";
 				SWIFT_OBJC_BRIDGING_HEADER = "trellotest/trellotest-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				DEVELOPMENT_TEAM = KX76256Q5Q;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				CODE_SIGN_ENTITLEMENTS = trellotest/trellotest.entitlements;
 			};
 			name = Release;
 		};

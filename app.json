@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "trello-test",
-    "slug": "trello-test",
+    "name": "trellotest",
+    "slug": "trellotest",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.maximedemurger.trello-test",
+      "bundleIdentifier": "com.maximedemurger.trellotest",
       "appleTeamId": "KX76256Q5Q"
     },
     "android": {
@@ -18,7 +18,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.maximedemurger.trello-test"
+      "package": "com.maximedemurger.trellotest"
     },
     "web": {
       "bundler": "metro",

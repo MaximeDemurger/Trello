@@ -285,8 +285,7 @@ export const DragDropProvider = ({
               }}>
                 <ItemCard
                   item={getItem(draggingTaskId)}
-                  onPress={() => {}}
-                  onDelete={() => {}}
+                  disableSwipe
                 />
               </View>
             )}

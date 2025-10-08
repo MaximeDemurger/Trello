@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   useSharedValue,
+  runOnJS,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
@@ -14,33 +15,13 @@ import { useDraggingContext } from "../DragDropProvider/dragDropContext";
 
 type ItemCardProps = {
   item: Item | undefined;
-  onPress: () => void;
-  onDelete: () => void;
+  onPress?: () => void;
+  onDelete?: () => void;
   onArchive?: () => void;
   groupId?: string;
+  disableSwipe?: boolean;
 };
 
-const getInitials = (name: string): string => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-const getAvatarColor = (name: string): string => {
-  const colors = [
-    "#6366f1",
-    "#ec4899",
-    "#10b981",
-    "#f59e0b",
-    "#8b5cf6",
-    "#ef4444",
-  ];
-  const index = name.length % colors.length;
-  return colors[index];
-};
 
 export const ItemCard: React.FC<ItemCardProps> = ({
   item,
@@ -48,6 +29,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onDelete,
   onArchive,
   groupId,
+  disableSwipe,
 }) => {
   const { draggingTaskId, setDraggingTask } = useDraggingContext();
   const cardRef = useRef<View>(null);
@@ -90,7 +72,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const handleDeletePress = () => {
     translateX.value = withTiming(0, { duration: 200 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onDelete();
+    onDelete?.();
   };
 
   const handleCancelSwipe = () => {
@@ -101,7 +83,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const MAX_SWIPE_RIGHT = 100;
 
   const panGesture = Gesture.Pan()
-    .enabled(!draggingTaskId)
+    .enabled(!disableSwipe && !draggingTaskId)
     .activeOffsetX([-10, 10])
     .onUpdate((e) => {
       const clampedX = Math.max(MAX_SWIPE_LEFT, Math.min(MAX_SWIPE_RIGHT, e.translationX));
@@ -114,10 +96,35 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       translateX.value = withTiming(0, { duration: 200 });
     });
 
+  if (disableSwipe) {
+    return (
+      <Animated.View style={[styles.container, animatedStyle]}>
+        <Pressable
+          ref={cardRef}
+          onPress={onPress}
+          onLongPress={handleLongPress}
+          delayLongPress={200}
+          style={styles.card}
+        >
+          <View style={styles.pressable}>
+            <Text style={styles.title} numberOfLines={2}>
+              {item?.title}
+            </Text>
+            {item?.description ? (
+              <Text style={styles.description} numberOfLines={2}>
+                {item.description}
+              </Text>
+            ) : null}
+            <CardFooter item={item} />
+          </View>
+        </Pressable>
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <View style={styles.actionsContainer}>
+      <View style={[styles.actionsContainer, draggingTaskId === item?.id && styles.actionsContainerDragging]}>
         <Pressable onPress={handleArchivePress} style={styles.leftAction}>
           <Ionicons name={isArchived ? "arrow-undo-outline" : "archive-outline"} size={20} color="#fff" />
           <Text style={styles.actionText}>{isArchived ? "Unarchive" : "Archive"}</Text>
@@ -219,12 +226,14 @@ const styles = StyleSheet.create((theme) => ({
     overflow: "hidden",
     borderRadius: theme.borderRadius.lg,
   },
+  actionsContainerDragging: {
+    opacity: 0,
+  },
   card: {
     backgroundColor: theme.colors.white,
     borderRadius: theme.borderRadius.lg,
     borderWidth: 1,
     borderColor: theme.colors.borderLight,
-    ...theme.shadows.md,
   },
   pressable: {
     padding: theme.spacing.lg,
