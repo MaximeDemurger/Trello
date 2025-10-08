@@ -1,10 +1,12 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Text, View, Pressable } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
 import Animated, {
   useAnimatedStyle,
   withTiming,
+  useSharedValue,
 } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import type { Item } from "@/types/board.types";
@@ -16,7 +18,6 @@ type ItemCardProps = {
   onDelete: () => void;
   onArchive?: () => void;
   groupId?: string;
-  disableSwipe?: boolean;
 };
 
 const getInitials = (name: string): string => {
@@ -47,10 +48,12 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   onDelete,
   onArchive,
   groupId,
-  disableSwipe,
 }) => {
   const { draggingTaskId, setDraggingTask } = useDraggingContext();
   const cardRef = useRef<View>(null);
+  const translateX = useSharedValue(0);
+
+  const isArchived = item?.archived || groupId === "archived";
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: draggingTaskId === item?.id ? withTiming(0.5) : withTiming(1),
@@ -59,6 +62,10 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         scale: draggingTaskId === item?.id ? withTiming(0.95) : withTiming(1),
       },
     ],
+  }));
+
+  const swipeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
   }));
 
   if (!item) {
@@ -74,29 +81,75 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     });
   };
 
-  
+  const handleArchivePress = () => {
+    translateX.value = withTiming(0, { duration: 200 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onArchive?.();
+  };
+
+  const handleDeletePress = () => {
+    translateX.value = withTiming(0, { duration: 200 });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onDelete();
+  };
+
+  const handleCancelSwipe = () => {
+    translateX.value = withTiming(0, { duration: 200 });
+  };
+
+  const MAX_SWIPE_LEFT = -100;
+  const MAX_SWIPE_RIGHT = 100;
+
+  const panGesture = Gesture.Pan()
+    .enabled(!draggingTaskId)
+    .activeOffsetX([-10, 10])
+    .onUpdate((e) => {
+      const clampedX = Math.max(MAX_SWIPE_LEFT, Math.min(MAX_SWIPE_RIGHT, e.translationX));
+      translateX.value = clampedX;
+    })
+    .onEnd(() => {
+      if (translateX.value <= MAX_SWIPE_LEFT + 10 || translateX.value >= MAX_SWIPE_RIGHT - 10) {
+        return;
+      }
+      translateX.value = withTiming(0, { duration: 200 });
+    });
+
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <Pressable
-        ref={cardRef}
-        onPress={onPress}
-        onLongPress={handleLongPress}
-        delayLongPress={200}
-        style={styles.card}
-      >
-        <View style={styles.pressable}>
-          <Text style={styles.title} numberOfLines={2}>
-            {item?.title}
-          </Text>
-          {item?.description ? (
-            <Text style={styles.description} numberOfLines={2}>
-              {item.description}
-            </Text>
-          ) : null}
-          <CardFooter item={item} />
-        </View>
-      </Pressable>
+      <View style={styles.actionsContainer}>
+        <Pressable onPress={handleArchivePress} style={styles.leftAction}>
+          <Ionicons name={isArchived ? "arrow-undo-outline" : "archive-outline"} size={20} color="#fff" />
+          <Text style={styles.actionText}>{isArchived ? "Unarchive" : "Archive"}</Text>
+        </Pressable>
+        <Pressable onPress={handleDeletePress} style={styles.rightAction}>
+          <Ionicons name="trash-outline" size={20} color="#fff" />
+          <Text style={styles.actionText}>Delete</Text>
+        </Pressable>
+      </View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={swipeStyle}>
+          <Pressable
+            ref={cardRef}
+            onPress={onPress}
+            onLongPress={handleLongPress}
+            delayLongPress={200}
+            style={styles.card}
+          >
+            <View style={styles.pressable}>
+              <Text style={styles.title} numberOfLines={2}>
+                {item?.title}
+              </Text>
+              {item?.description ? (
+                <Text style={styles.description} numberOfLines={2}>
+                  {item.description}
+                </Text>
+              ) : null}
+              <CardFooter item={item} />
+            </View>
+          </Pressable>
+        </Animated.View>
+      </GestureDetector>
     </Animated.View>
   );
 };
@@ -129,14 +182,21 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
         )}
       </View>
 
-      {item.assignedMembers && (
-        <View
-          style={[
-            styles.avatar,
-            { backgroundColor: getAvatarColor(item.assignedMembers.map((m) => m.name).join(",")) },
-          ]}
-        >
-          <Text style={styles.avatarText}>{getInitials(item.assignedMembers.map((m) => m.name).join(",") || "")}</Text>
+      {item.assignedMembers && item.assignedMembers.length > 0 && (
+        <View style={styles.avatars}>
+          {item.assignedMembers.slice(0, 2).map((member) => (
+            <View
+              key={member.id}
+              style={[styles.avatar, { backgroundColor: member.color }]}
+            >
+              <Text style={styles.avatarText}>{member.initials}</Text>
+            </View>
+          ))}
+          {item.assignedMembers.length > 2 && (
+            <View style={[styles.avatar, styles.avatarMore]}>
+              <Text style={styles.avatarText}>+{item.assignedMembers.length - 2}</Text>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -146,6 +206,18 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
 const styles = StyleSheet.create((theme) => ({
   container: {
     position: "relative",
+    overflow: "hidden",
+  },
+  actionsContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    overflow: "hidden",
+    borderRadius: theme.borderRadius.lg,
   },
   card: {
     backgroundColor: theme.colors.white,
@@ -181,6 +253,11 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: "center",
     gap: theme.spacing.sm,
   },
+  avatars: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.xs,
+  },
   metadataItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -212,9 +289,32 @@ const styles = StyleSheet.create((theme) => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarMore: {
+    backgroundColor: theme.colors.gray500,
+  },
   avatarText: {
     fontSize: theme.typography.fontSize.xs,
     fontWeight: theme.typography.fontWeight.bold,
     color: theme.colors.white,
+  },
+  leftAction: {
+    backgroundColor: "#3b82f6",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingLeft: 20,
+    flex: 1,
+  },
+  rightAction: {
+    backgroundColor: "#ef4444",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: 20,
+    flex: 1,
+  },
+  actionText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
   },
 }));

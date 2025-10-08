@@ -33,11 +33,16 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
 
   const { getBoardWithGroups } = useBoardStore();
   const [board, setBoard] = useState(getBoardWithGroups(boardId));
+  const [archivedItems, setArchivedItems] = useState<any[]>([]);
 
   useEffect(() => {
     const unsubscribe = useBoardStore.subscribe(() => {
       setBoard(getBoardWithGroups(boardId));
+      const items = useBoardStore.getState().items;
+      setArchivedItems(items.filter((i) => i.boardId === boardId && i.archived));
     });
+    const items = useBoardStore.getState().items;
+    setArchivedItems(items.filter((i) => i.boardId === boardId && i.archived));
     return unsubscribe;
   }, [boardId]);
 
@@ -76,6 +81,11 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   const handleArchiveItem = (itemId: string) => {
     const { archiveItem } = useBoardStore.getState();
     archiveItem(itemId);
+  };
+
+  const handleUnarchiveItem = (itemId: string) => {
+    const { unarchiveItem } = useBoardStore.getState();
+    unarchiveItem(itemId);
   };
 
   return (
@@ -151,6 +161,25 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
               onAddItem={handleAddItem}
             />
           ))}
+
+          {archivedItems.length > 0 && (
+            <GroupColumn
+              key="archived"
+              group={{
+                id: "archived",
+                title: "Archived",
+                boardId,
+                order: 9999,
+                createdAt: "",
+                items: archivedItems,
+              }}
+              boardColor={board.color}
+              onItemPress={handleItemPress}
+              onDeleteItem={handleDeleteItem}
+              onArchiveItem={handleUnarchiveItem}
+              onAddItem={() => {}}
+            />
+          )}
 
           <Pressable
             accessibilityRole="button"

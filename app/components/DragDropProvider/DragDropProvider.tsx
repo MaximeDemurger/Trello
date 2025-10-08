@@ -287,7 +287,6 @@ export const DragDropProvider = ({
                   item={getItem(draggingTaskId)}
                   onPress={() => {}}
                   onDelete={() => {}}
-                disableSwipe
                 />
               </View>
             )}

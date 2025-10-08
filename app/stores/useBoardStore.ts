@@ -40,6 +40,7 @@ interface BoardActions {
   updateItemAssignees: (itemId: string, assignees: Member[]) => void;
   moveItem: (input: MoveItemInput) => void;
   archiveItem: (itemId: string) => void;
+  unarchiveItem: (itemId: string) => void;
   getBoardWithGroups: (boardId: string) => BoardWithGroups | null;
   getAllBoardsWithGroups: () => BoardWithGroups[];
   initializeDefaultData: () => void;
@@ -349,7 +350,26 @@ export const useBoardStore = create<BoardStore>()(
       },
 
       archiveItem: (itemId) => {
-        get().deleteItem(itemId);
+        set((state) => ({
+          items: state.items.map((i) =>
+            i.id === itemId
+              ? { ...i, archived: true, originalGroupId: i.originalGroupId || i.groupId, updatedAt: generateTimestamp() }
+              : i
+          ),
+        }));
+      },
+      unarchiveItem: (itemId) => {
+        set((state) => {
+          const item = state.items.find((i) => i.id === itemId);
+          if (!item || !item.originalGroupId) return state;
+          return {
+            items: state.items.map((i) =>
+              i.id === itemId
+                ? { ...i, archived: false, groupId: i.originalGroupId!, originalGroupId: undefined, updatedAt: generateTimestamp() }
+                : i
+            ),
+          };
+        });
       },
       getBoardWithGroups: (boardId) => {
         const state = get();
@@ -362,7 +382,7 @@ export const useBoardStore = create<BoardStore>()(
           .map((group) => ({
             ...group,
             items: state.items
-              .filter((i) => i.groupId === group.id)
+              .filter((i) => i.groupId === group.id && !i.archived)
               .sort((a, b) => a.order - b.order),
           }));
 
@@ -380,7 +400,7 @@ export const useBoardStore = create<BoardStore>()(
             .map((group) => ({
               ...group,
               items: state.items
-                .filter((i) => i.groupId === group.id)
+                .filter((i) => i.groupId === group.id && !i.archived)
                 .sort((a, b) => a.order - b.order),
             }));
 

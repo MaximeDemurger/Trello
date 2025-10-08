@@ -20,6 +20,8 @@ export type Item = {
   dueDate?: string
   priority?: 'low' | 'medium' | 'high'
   labels?: string[]
+  archived?: boolean
+  originalGroupId?: string
 }
 
 export type Group = {
