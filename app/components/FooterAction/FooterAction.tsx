@@ -1,7 +1,7 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native-unistyles";
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native-unistyles';
 
 type Props = {
   onClose: () => void;
@@ -15,37 +15,33 @@ export const FooterAction: React.FC<Props> = ({
   onClose,
   onCreate,
   title,
-  cancelLabel = "Cancel",
-  submitLabel = "Create",
+  cancelLabel = 'Cancel',
+  submitLabel = 'Create',
 }) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.buttonContainer, { paddingBottom: insets.bottom }]}> 
+    <View style={[styles.buttonContainer, { paddingBottom: insets.bottom }]}>
       <Pressable
-        onPress={onClose}
-        style={({ pressed }) => [
-          styles.button,
-          styles.cancelButton,
-          pressed && { opacity: 0.7 },
-        ]}
-        accessibilityRole="button"
         accessibilityLabel={cancelLabel}
+        accessibilityRole="button"
+        onPress={onClose}
+        style={({ pressed }) => [styles.button, styles.cancelButton, pressed && { opacity: 0.7 }]}
       >
         <Text style={styles.cancelButtonText}>{cancelLabel}</Text>
       </Pressable>
 
       <Pressable
-        onPress={onCreate}
+        accessibilityLabel={submitLabel}
+        accessibilityRole="button"
         disabled={!title.trim()}
+        onPress={onCreate}
         style={({ pressed }) => [
           styles.button,
           styles.submitButton,
           !title.trim() && styles.disabledButton,
           pressed && { opacity: 0.7 },
         ]}
-        accessibilityRole="button"
-        accessibilityLabel={submitLabel}
       >
         <Text style={styles.submitButtonText}>{submitLabel}</Text>
       </Pressable>
@@ -55,7 +51,7 @@ export const FooterAction: React.FC<Props> = ({
 
 const styles = StyleSheet.create((theme) => ({
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.md,
@@ -66,8 +62,8 @@ const styles = StyleSheet.create((theme) => ({
   button: {
     flex: 1,
     height: theme.components.button.height.md,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: theme.components.button.borderRadius,
   },
   cancelButton: {
@@ -92,5 +88,3 @@ const styles = StyleSheet.create((theme) => ({
     opacity: 0.5,
   },
 }));
-
-

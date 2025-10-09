@@ -3,6 +3,7 @@
 Small Trello-style board app built with React Native (Expo) and TypeScript. I wrote this alone for a company technical test. The goal is to show clear structure, clean code, and sensible tooling in a short timeframe.
 
 ## Features (scope of this test)
+
 - Boards with groups (columns) and items (cards)
 - Simple drag context prepared for moving items between groups
 - Swipe to delete on item cards with haptic feedback
@@ -11,6 +12,7 @@ Small Trello-style board app built with React Native (Expo) and TypeScript. I wr
 - Basic animations with Reanimated and sensible UI defaults
 
 ## Tech stack
+
 - React Native (Expo SDK 54), TypeScript
 - React Navigation (native stack), expo-linking (deep linking skeleton)
 - Zustand + MMKV for state and storage
@@ -19,6 +21,7 @@ Small Trello-style board app built with React Native (Expo) and TypeScript. I wr
 - Jest for unit tests, ESLint + Prettier for code quality
 
 ## Project structure
+
 ```
 app/
 ├── components/
@@ -41,26 +44,32 @@ app/
 ```
 
 ## Getting started
-1) Install dependencies
+
+1. Install dependencies
+
 ```bash
 yarn install
 ```
 
-2) Run the app (Expo)
+2. Run the app (Expo)
+
 ```bash
 yarn start
 ```
+
 - Press `i` for iOS simulator
 - Press `a` for Android emulator
 - Or scan the QR code with Expo Go
 
 ## Useful scripts
+
 - Type check: `yarn typecheck`
 - Lint: `yarn lint`
 - Format: `yarn format`
 - Tests: `yarn test`
 
 ## Notes
+
 - Local-only state (MMKV). No server or auth in this scope.
 - Drag & drop is structured for extension, but limited for the test.
 - I optimized for readability and a clean baseline rather than breadth.

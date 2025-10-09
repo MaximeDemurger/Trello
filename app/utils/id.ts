@@ -3,10 +3,9 @@
  */
 
 export const generateId = (): string => {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-}
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+};
 
 export const generateTimestamp = (): string => {
-  return new Date().toISOString()
-}
-
+  return new Date().toISOString();
+};

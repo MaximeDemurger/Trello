@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet } from 'react-native-unistyles';
 
 export const styles = StyleSheet.create((theme) => ({
   container: {
@@ -26,7 +26,7 @@ export const styles = StyleSheet.create((theme) => ({
     padding: theme.spacing.md,
     backgroundColor: theme.colors.white,
     minHeight: 48,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   textInput: {
     borderWidth: 1,
@@ -40,14 +40,14 @@ export const styles = StyleSheet.create((theme) => ({
   },
   textArea: {
     minHeight: 100,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
   },
   inputText: {
     fontSize: theme.typography.fontSize.base,
     color: theme.colors.gray900,
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: theme.spacing.md,
     marginTop: theme.spacing.xl,
   },
@@ -55,8 +55,8 @@ export const styles = StyleSheet.create((theme) => ({
     flex: 1,
     height: 48,
     borderRadius: theme.borderRadius.md,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelButton: {
     backgroundColor: theme.colors.gray200,
@@ -81,8 +81,8 @@ export const styles = StyleSheet.create((theme) => ({
     marginBottom: theme.spacing.lg,
   },
   colorGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.md,
   },
   colorSwatch: {
@@ -90,7 +90,7 @@ export const styles = StyleSheet.create((theme) => ({
     height: 36,
     borderRadius: 999,
     borderWidth: 2,
-    borderColor: "transparent",
+    borderColor: 'transparent',
   },
   colorSwatchSelected: {
     borderColor: theme.colors.gray900,

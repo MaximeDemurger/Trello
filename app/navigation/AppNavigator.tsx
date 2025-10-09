@@ -3,18 +3,18 @@
  * Main navigation structure for BoardFlow
  */
 
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
-import * as Linking from 'expo-linking'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { BoardListScreen, BoardDetailScreen } from '@/screens'
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { BoardListScreen, BoardDetailScreen } from '@/screens';
 
 export type RootStackParamList = {
-  BoardList: undefined
-  BoardDetail: { boardId: string }
-}
+  BoardList: undefined;
+  BoardDetail: { boardId: string };
+};
 
-const Stack = createNativeStackNavigator<RootStackParamList>()
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator: React.FC = () => {
   const linking = {
@@ -25,7 +25,7 @@ export const AppNavigator: React.FC = () => {
         BoardDetail: 'board/:boardId',
       },
     },
-  } as const
+  };
 
   return (
     <NavigationContainer linking={linking}>
@@ -36,10 +36,9 @@ export const AppNavigator: React.FC = () => {
           animation: 'slide_from_right',
         }}
       >
-        <Stack.Screen name="BoardList" component={BoardListScreen} />
-        <Stack.Screen name="BoardDetail" component={BoardDetailScreen} />
+        <Stack.Screen component={BoardListScreen} name="BoardList" />
+        <Stack.Screen component={BoardDetailScreen} name="BoardDetail" />
       </Stack.Navigator>
     </NavigationContainer>
-  )
-}
-
+  );
+};

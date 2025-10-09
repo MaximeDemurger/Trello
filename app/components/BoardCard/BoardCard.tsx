@@ -1,7 +1,7 @@
-import React from "react";
-import { Pressable, Text, View } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
-import type { Board } from "@/types/board.types";
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
+import type { Board } from '@/types/board.types';
 
 type BoardCardProps = {
   board: Board;
@@ -9,17 +9,13 @@ type BoardCardProps = {
   onPress: () => void;
 };
 
-export const BoardCard: React.FC<BoardCardProps> = ({
-  board,
-  itemCount,
-  onPress,
-}) => {
+export const BoardCard: React.FC<BoardCardProps> = ({ board, itemCount, onPress }) => {
   return (
     <Pressable onPress={onPress} style={styles.container}>
-      <Text style={styles.title} numberOfLines={1}>
+      <Text numberOfLines={1} style={styles.title}>
         {board.title}
       </Text>
-      <Text style={styles.description} numberOfLines={2}>
+      <Text numberOfLines={2} style={styles.description}>
         {board.description}
       </Text>
       <View style={styles.footer}>
@@ -38,7 +34,7 @@ const styles = StyleSheet.create((theme) => ({
     padding: theme.spacing.xl,
     borderColor: theme.colors.borderLight,
     ...theme.shadows.md,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   title: {
     fontSize: theme.typography.fontSize.xxl,
@@ -54,8 +50,8 @@ const styles = StyleSheet.create((theme) => ({
     lineHeight: 22,
   },
   footer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingTop: theme.spacing.sm,
     borderTopWidth: 1,
     borderTopColor: theme.colors.gray100,

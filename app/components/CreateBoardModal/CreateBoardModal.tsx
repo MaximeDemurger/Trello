@@ -1,10 +1,10 @@
-import { FooterAction } from "../FooterAction/FooterAction";
-import { BottomSheet } from "../BottomSheet/BottomSheet";
-import { FC } from "react";
-import { View, Pressable } from "react-native";
-import { Text } from "react-native";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { styles } from "./CreateBoardModal.styles";
+import { FooterAction } from '../FooterAction/FooterAction';
+import { BottomSheet } from '../BottomSheet/BottomSheet';
+import { FC } from 'react';
+import { View, Pressable } from 'react-native';
+import { Text } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { styles } from './CreateBoardModal.styles';
 
 type CreateBoardFormProps = {
   title: string;
@@ -30,31 +30,29 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
   onSubmit,
 }) => {
   const COLOR_OPTIONS = [
-    "#FFE4E6",
-    "#FEF3C7",
-    "#E0E7FF",
-    "#EDE9FE",
-    "#E0F2FE",
-    "#DCFCE7",
-    "#D1FAE5",
-    "#FCE7F3",
-    "#E9D5FF",
-    "#BFDBFE",
+    '#FFE4E6',
+    '#FEF3C7',
+    '#E0E7FF',
+    '#EDE9FE',
+    '#E0F2FE',
+    '#DCFCE7',
+    '#D1FAE5',
+    '#FCE7F3',
+    '#E9D5FF',
+    '#BFDBFE',
   ];
+
+  const renderFooter = () => (
+    <FooterAction onClose={onClose} onCreate={onSubmit} submitLabel="Create Board" title={title} />
+  );
+
   return (
     <BottomSheet
-      visible={visible}
-      onClose={onClose}
+      footerComponent={renderFooter}
       index={1}
-      snapPoints={["100%"]}
-      footerComponent={() => (
-        <FooterAction
-          onClose={onClose}
-          onCreate={onSubmit}
-          title={title}
-          submitLabel="Create Board"
-        />
-      )}
+      onClose={onClose}
+      snapPoints={['100%']}
+      visible={visible}
     >
       <View style={styles.container}>
         <Text style={styles.title}>Create New Board</Text>
@@ -62,25 +60,24 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Title</Text>
           <BottomSheetTextInput
-            style={styles.textInput}
-            value={title}
             onChangeText={onTitleChange}
             placeholder="Board Title"
             placeholderTextColor="#9ca3af"
+            style={styles.textInput}
+            value={title}
           />
         </View>
-
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Description</Text>
           <BottomSheetTextInput
-            style={[styles.textInput, styles.textArea]}
-            value={description}
+            multiline
+            numberOfLines={4}
             onChangeText={onDescriptionChange}
             placeholder="Board Description"
             placeholderTextColor="#9ca3af"
-            multiline
-            numberOfLines={4}
+            style={[styles.textInput, styles.textArea]}
+            value={description}
           />
         </View>
 
@@ -90,8 +87,8 @@ export const CreateBoardModal: FC<CreateBoardFormProps> = ({
             {COLOR_OPTIONS.map((c) => (
               <Pressable
                 key={c}
-                accessibilityRole="button"
                 accessibilityLabel={`Select color ${c}`}
+                accessibilityRole="button"
                 onPress={() => onColorChange(c)}
                 style={[
                   styles.colorSwatch,

@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import { useBoardStore } from "@/stores/useBoardStore";
-import { styles } from "../ItemDetails.styles";
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { useBoardStore } from '@/stores/useBoardStore';
+import { styles } from '../ItemDetails.styles';
 
 type Props = {
   itemId: string;
@@ -27,7 +27,7 @@ export const MoveToSection: React.FC<Props> = ({ itemId, groups, currentGroupId 
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Ionicons name="swap-vertical-outline" size={20} color="#6b7280" />
+        <Ionicons color="#6b7280" name="swap-vertical-outline" size={20} />
         <Text style={styles.sectionTitle}>Move to</Text>
       </View>
       <View style={styles.chipsRow}>

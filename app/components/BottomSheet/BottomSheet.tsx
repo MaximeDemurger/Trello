@@ -3,25 +3,22 @@
  * Gorhom bottom sheet wrapper with minimal API
  */
 
-import React, { FC, useCallback, useEffect, useRef } from "react";
-import { StyleSheet } from "react-native-unistyles";
+import React, { FC, useEffect, useRef } from 'react';
+import { StyleSheet } from 'react-native-unistyles';
 import {
   BottomSheetBackdrop,
   BottomSheetScrollView,
   BottomSheetModal as GorhomBottomSheetModal,
   BottomSheetModalProps as GorhomBottomSheetProps,
-} from "@gorhom/bottom-sheet";
-import * as Haptics from "expo-haptics";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from '@gorhom/bottom-sheet';
+import * as Haptics from 'expo-haptics';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type BottomSheetProps = GorhomBottomSheetProps & {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  onReady?: (api: {
-    expandTo: (index: number) => void;
-    expandToMax: () => void;
-  }) => void;
+  onReady?: (api: { expandTo: (index: number) => void; expandToMax: () => void }) => void;
 };
 
 export const BottomSheet: FC<BottomSheetProps> = ({
@@ -33,14 +30,12 @@ export const BottomSheet: FC<BottomSheetProps> = ({
 }) => {
   const modalRef = useRef<GorhomBottomSheetModal>(null);
   const insets = useSafeAreaInsets();
-  const handleChange = useCallback(
-    (index: number) => {
-      if (index === -1) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
+
+  const handleChange = (index: number) => {
+    if (index === -1) {
+      onClose();
+    }
+  };
 
   useEffect(() => {
     if (visible) {
@@ -60,38 +55,31 @@ export const BottomSheet: FC<BottomSheetProps> = ({
     onReady(api);
   }, [onReady]);
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        {...props}
-      />
-    ),
-    []
+  const renderBackdrop = (propsBackdrop: any) => (
+    <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...propsBackdrop} />
   );
 
   return (
     <GorhomBottomSheetModal
       ref={modalRef}
-      index={0}
-      onChange={handleChange}
-      backdropComponent={renderBackdrop}
-      keyboardBehavior="extend"
-      keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
-      enablePanDownToClose
+      backdropComponent={renderBackdrop}
       enableDismissOnClose
+      enablePanDownToClose
       handleIndicatorStyle={styles.handleIndicator}
       handleStyle={styles.handle}
+      index={0}
+      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
+      onChange={handleChange}
       topInset={insets.top}
       {...props}
     >
       <BottomSheetScrollView
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: insets.bottom }}
         enableFooterMarginAdjustment
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: insets.bottom }}
+        showsVerticalScrollIndicator={false}
         style={styles.contentContainer}
       >
         {children}

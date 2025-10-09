@@ -1,17 +1,12 @@
-import React, { useRef, useState } from "react";
-import { Text, View, Pressable } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-  useSharedValue,
-  runOnJS,
-} from "react-native-reanimated";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
-import type { Item } from "@/types/board.types";
-import { useDraggingContext } from "../DragDropProvider/dragDropContext";
+import React, { useRef } from 'react';
+import { Text, View, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
+import Animated, { useAnimatedStyle, withTiming, useSharedValue } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import type { Item } from '@/types/board.types';
+import { useDraggingContext } from '../DragDropProvider/dragDropContext';
 
 type ItemCardProps = {
   item: Item | undefined;
@@ -21,7 +16,6 @@ type ItemCardProps = {
   groupId?: string;
   disableSwipe?: boolean;
 };
-
 
 export const ItemCard: React.FC<ItemCardProps> = ({
   item,
@@ -35,7 +29,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
   const cardRef = useRef<View>(null);
   const translateX = useSharedValue(0);
 
-  const isArchived = item?.archived || groupId === "archived";
+  const isArchived = item?.archived || groupId === 'archived';
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: draggingTaskId === item?.id ? withTiming(0.5) : withTiming(1),
@@ -58,7 +52,7 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     if (!groupId) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    cardRef.current?.measureInWindow((x, y, width, height) => {
+    cardRef.current?.measureInWindow((x, y) => {
       setDraggingTask(item.id, x, y, groupId);
     });
   };
@@ -73,10 +67,6 @@ export const ItemCard: React.FC<ItemCardProps> = ({
     translateX.value = withTiming(0, { duration: 200 });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onDelete?.();
-  };
-
-  const handleCancelSwipe = () => {
-    translateX.value = withTiming(0, { duration: 200 });
   };
 
   const MAX_SWIPE_LEFT = -100;
@@ -101,17 +91,17 @@ export const ItemCard: React.FC<ItemCardProps> = ({
       <Animated.View style={[styles.container, animatedStyle]}>
         <Pressable
           ref={cardRef}
-          onPress={onPress}
-          onLongPress={handleLongPress}
           delayLongPress={200}
+          onLongPress={handleLongPress}
+          onPress={onPress}
           style={styles.card}
         >
           <View style={styles.pressable}>
-            <Text style={styles.title} numberOfLines={2}>
+            <Text numberOfLines={2} style={styles.title}>
               {item?.title}
             </Text>
             {item?.description ? (
-              <Text style={styles.description} numberOfLines={2}>
+              <Text numberOfLines={2} style={styles.description}>
                 {item.description}
               </Text>
             ) : null}
@@ -124,13 +114,22 @@ export const ItemCard: React.FC<ItemCardProps> = ({
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <View style={[styles.actionsContainer, draggingTaskId === item?.id && styles.actionsContainerDragging]}>
+      <View
+        style={[
+          styles.actionsContainer,
+          draggingTaskId === item?.id && styles.actionsContainerDragging,
+        ]}
+      >
         <Pressable onPress={handleArchivePress} style={styles.leftAction}>
-          <Ionicons name={isArchived ? "arrow-undo-outline" : "archive-outline"} size={20} color="#fff" />
-          <Text style={styles.actionText}>{isArchived ? "Unarchive" : "Archive"}</Text>
+          <Ionicons
+            color="#fff"
+            name={isArchived ? 'arrow-undo-outline' : 'archive-outline'}
+            size={20}
+          />
+          <Text style={styles.actionText}>{isArchived ? 'Unarchive' : 'Archive'}</Text>
         </Pressable>
         <Pressable onPress={handleDeletePress} style={styles.rightAction}>
-          <Ionicons name="trash-outline" size={20} color="#fff" />
+          <Ionicons color="#fff" name="trash-outline" size={20} />
           <Text style={styles.actionText}>Delete</Text>
         </Pressable>
       </View>
@@ -138,17 +137,17 @@ export const ItemCard: React.FC<ItemCardProps> = ({
         <Animated.View style={swipeStyle}>
           <Pressable
             ref={cardRef}
-            onPress={onPress}
-            onLongPress={handleLongPress}
             delayLongPress={200}
+            onLongPress={handleLongPress}
+            onPress={onPress}
             style={styles.card}
           >
             <View style={styles.pressable}>
-              <Text style={styles.title} numberOfLines={2}>
+              <Text numberOfLines={2} style={styles.title}>
                 {item?.title}
               </Text>
               {item?.description ? (
-                <Text style={styles.description} numberOfLines={2}>
+                <Text numberOfLines={2} style={styles.description}>
                   {item.description}
                 </Text>
               ) : null}
@@ -169,20 +168,20 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
           <View
             style={[
               styles.priorityDot,
-              item.priority === "high" && styles.priorityHigh,
-              item.priority === "medium" && styles.priorityMedium,
-              item.priority === "low" && styles.priorityLow,
+              item.priority === 'high' && styles.priorityHigh,
+              item.priority === 'medium' && styles.priorityMedium,
+              item.priority === 'low' && styles.priorityLow,
             ]}
           />
         )}
 
         {item.dueDate && (
           <View style={styles.metadataItem}>
-            <Ionicons name="calendar-outline" size={12} color="#6b7280" />
+            <Ionicons color="#6b7280" name="calendar-outline" size={12} />
             <Text style={styles.metadataText}>
-              {new Date(item.dueDate).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
+              {new Date(item.dueDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
               })}
             </Text>
           </View>
@@ -192,10 +191,7 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
       {item.assignedMembers && item.assignedMembers.length > 0 && (
         <View style={styles.avatars}>
           {item.assignedMembers.slice(0, 2).map((member) => (
-            <View
-              key={member.id}
-              style={[styles.avatar, { backgroundColor: member.color }]}
-            >
+            <View key={member.id} style={[styles.avatar, { backgroundColor: member.color }]}>
               <Text style={styles.avatarText}>{member.initials}</Text>
             </View>
           ))}
@@ -212,18 +208,18 @@ const CardFooter: React.FC<{ item: Item }> = React.memo(({ item }) => {
 
 const styles = StyleSheet.create((theme) => ({
   container: {
-    position: "relative",
-    overflow: "hidden",
+    position: 'relative',
+    overflow: 'hidden',
   },
   actionsContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    overflow: "hidden",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    overflow: 'hidden',
     borderRadius: theme.borderRadius.lg,
   },
   actionsContainerDragging: {
@@ -252,24 +248,24 @@ const styles = StyleSheet.create((theme) => ({
     marginBottom: theme.spacing.sm,
   },
   footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginTop: theme.spacing.xs,
   },
   metadata: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: theme.spacing.sm,
   },
   avatars: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: theme.spacing.xs,
   },
   metadataItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
   },
   metadataText: {
@@ -283,20 +279,20 @@ const styles = StyleSheet.create((theme) => ({
     borderRadius: 4,
   },
   priorityHigh: {
-    backgroundColor: "#ef4444",
+    backgroundColor: '#ef4444',
   },
   priorityMedium: {
-    backgroundColor: "#f59e0b",
+    backgroundColor: '#f59e0b',
   },
   priorityLow: {
-    backgroundColor: "#3b82f6",
+    backgroundColor: '#3b82f6',
   },
   avatar: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarMore: {
     backgroundColor: theme.colors.gray500,
@@ -307,23 +303,25 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.white,
   },
   leftAction: {
-    backgroundColor: "#3b82f6",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    paddingLeft: 20,
+    backgroundColor: '#3b82f6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxWidth: 115,
+    paddingRight: 15,
     flex: 1,
   },
   rightAction: {
-    backgroundColor: "#ef4444",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    paddingRight: 20,
+    backgroundColor: '#ef4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxWidth: 115,
+    paddingLeft: 15,
     flex: 1,
   },
   actionText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
     marginTop: 4,
   },
 }));

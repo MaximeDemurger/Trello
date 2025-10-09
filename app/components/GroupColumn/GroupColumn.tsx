@@ -1,17 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import { Text, View, Pressable, FlatList } from "react-native";
-import { StyleSheet } from "react-native-unistyles";
+import React, { useEffect, useRef } from 'react';
+import { Text, View, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native-unistyles';
 import Animated, {
   FadeIn,
   useAnimatedStyle,
   withTiming,
   useSharedValue,
-} from "react-native-reanimated";
-import { ItemCard } from "../ItemCard/ItemCard";
-import type { GroupWithItems } from "@/types/board.types";
-import { Ionicons } from "@expo/vector-icons";
-import { useDraggingContext } from "../DragDropProvider/dragDropContext";
-import type { DropZone } from "../DragDropProvider/dragDropContext";
+} from 'react-native-reanimated';
+import { FlashList } from '@shopify/flash-list';
+import { ItemCard } from '../ItemCard/ItemCard';
+import type { GroupWithItems } from '@/types/board.types';
+import { Ionicons } from '@expo/vector-icons';
+import { useDraggingContext } from '../DragDropProvider/dragDropContext';
+import type { DropZone } from '../DragDropProvider/dragDropContext';
 
 type GroupColumnProps = {
   group: GroupWithItems;
@@ -36,18 +37,18 @@ const DropZonePlaceholder: React.FC<{
   useEffect(() => {
     height.value = withTiming(isActive ? 60 : 8, { duration: 200 });
     opacity.value = withTiming(isActive ? 1 : 0, { duration: 200 });
-  }, [isActive]);
+  }, [height, isActive, opacity]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      containerRef.current?.measureInWindow((x, y, width, height) => {
+      containerRef.current?.measureInWindow((x, y, width, heightWindow) => {
         onLayout({
           groupId,
           position,
           x,
           y,
           width,
-          height,
+          height: heightWindow,
         });
       });
     }, 100);
@@ -94,32 +95,29 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   const isHovered = hoveredGroupId === group.id;
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
-    borderColor: withTiming(isHovered ? "#6366f1" : "#e5e7eb", {
+    borderColor: withTiming(isHovered ? '#6366f1' : '#e5e7eb', {
       duration: 200,
     }),
     borderWidth: withTiming(isHovered ? 2 : 1, { duration: 200 }),
     transform: [{ scale: withTiming(isHovered ? 1.02 : 1, { duration: 200 }) }],
   }));
 
-  const renderData = React.useMemo(() => {
-    const data: Array<{
-      type: "dropzone" | "item";
-      id: string;
-      item?: any;
-      position?: number;
-    }> = [];
-    data.push({ type: "dropzone", id: `dropzone-${group.id}-0`, position: 0 });
-    group.items.forEach((item, index) => {
-      data.push({ type: "item", id: item.id, item });
-      data.push({
-        type: "dropzone",
-        id: `dropzone-${group.id}-${index + 1}`,
-        position: index + 1,
-      });
+  const data: {
+    type: 'dropzone' | 'item';
+    id: string;
+    item?: any;
+    position?: number;
+  }[] = [];
+  data.push({ type: 'dropzone', id: `dropzone-${group.id}-0`, position: 0 });
+  group.items.forEach((item, index) => {
+    data.push({ type: 'item', id: item.id, item });
+    data.push({
+      type: 'dropzone',
+      id: `dropzone-${group.id}-${index + 1}`,
+      position: index + 1,
     });
-
-    return data;
-  }, [group.items, group.id]);
+  });
+  const renderData = data;
 
   const handleDropZoneLayout = (zone: DropZone) => {
     registerDropZone(zone);
@@ -134,18 +132,18 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   }, [group.id, group.items.length, unregisterDropZone]);
 
   const renderItem = ({ item: dataItem }: any) => {
-    if (dataItem.type === "dropzone") {
+    if (dataItem.type === 'dropzone') {
       const isActive =
-        draggingTaskId !== "" &&
+        draggingTaskId !== '' &&
         targetDropZone?.groupId === group.id &&
         targetDropZone?.position === dataItem.position;
 
       return (
         <DropZonePlaceholder
           groupId={group.id}
-          position={dataItem.position}
           isActive={isActive}
           onLayout={handleDropZoneLayout}
+          position={dataItem.position}
           remeasureTrigger={remeasureTrigger}
         />
       );
@@ -153,11 +151,11 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
 
     return (
       <ItemCard
-        item={dataItem.item}
-        onPress={() => onItemPress(dataItem.item.id)}
-        onDelete={() => onDeleteItem(dataItem.item.id)}
-        onArchive={() => onArchiveItem(dataItem.item.id)}
         groupId={group.id}
+        item={dataItem.item}
+        onArchive={() => onArchiveItem(dataItem.item.id)}
+        onDelete={() => onDeleteItem(dataItem.item.id)}
+        onPress={() => onItemPress(dataItem.item.id)}
       />
     );
   };
@@ -165,14 +163,21 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   const parseHex = (hex?: string): { r: number; g: number; b: number } | null => {
     if (!hex) return null;
     const clean = hex.replace('#', '');
-    const full = clean.length === 3
-      ? clean.split('').map((c) => c + c).join('')
-      : clean;
+    const full =
+      clean.length === 3
+        ? clean
+            .split('')
+            .map((c) => c + c)
+            .join('')
+        : clean;
     const int = parseInt(full, 16);
     if (Number.isNaN(int)) return null;
     return {
+      // eslint-disable-next-line no-bitwise
       r: (int >> 16) & 255,
+      // eslint-disable-next-line no-bitwise
       g: (int >> 8) & 255,
+      // eslint-disable-next-line no-bitwise
       b: int & 255,
     };
   };
@@ -191,9 +196,7 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
     if (!rgb) return hex;
     const { r, g, b } = rgb;
     const adjust = (channel: number) =>
-      amount >= 0
-        ? channel + (255 - channel) * amount
-        : channel * (1 + amount);
+      amount >= 0 ? channel + (255 - channel) * amount : channel * (1 + amount);
     return toHex(adjust(r), adjust(g), adjust(b));
   };
 
@@ -208,9 +211,36 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
   const adaptiveBackground = boardColor
     ? adjustColor(boardColor, isLight ? -0.06 : 0.12)
     : undefined;
-  const adaptiveBorder = boardColor
-    ? adjustColor(boardColor, isLight ? -0.14 : 0.22)
-    : undefined;
+  const adaptiveBorder = boardColor ? adjustColor(boardColor, isLight ? -0.14 : 0.22) : undefined;
+
+  const renderEmpty = () => (
+    <>
+      <DropZonePlaceholder
+        groupId={group.id}
+        isActive={
+          draggingTaskId !== '' &&
+          targetDropZone?.groupId === group.id &&
+          targetDropZone?.position === 0
+        }
+        onLayout={handleDropZoneLayout}
+        position={0}
+        remeasureTrigger={remeasureTrigger}
+      />
+      <Text style={styles.emptyText}>No items yet</Text>
+    </>
+  );
+
+  const renderFooter = () => {
+    return (
+      <Pressable
+        onPress={() => onAddItem(group.id)}
+        style={({ pressed }) => [styles.addButton, pressed && { opacity: 0.7 }]}
+      >
+        <Ionicons color="#6b7280" name="add" size={20} />
+        <Text style={styles.addButtonText}>Add item</Text>
+      </Pressable>
+    );
+  };
 
   return (
     <Animated.View
@@ -229,41 +259,15 @@ export const GroupColumn: React.FC<GroupColumnProps> = ({
           <Text style={styles.badgeText}>{group.items.length}</Text>
         </View>
       </View>
-      <FlatList
-        style={styles.scrollView}
+      <FlashList
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
         data={renderData}
-        ListFooterComponent={() => (
-          <Pressable
-            onPress={() => onAddItem(group.id)}
-            style={({ pressed }) => [
-              styles.addButton,
-              pressed && { opacity: 0.7 },
-            ]}
-          >
-            <Ionicons name="add" size={20} color="#6b7280" />
-            <Text style={styles.addButtonText}>Add item</Text>
-          </Pressable>
-        )}
-        renderItem={renderItem}
-        ListEmptyComponent={() => (
-          <>
-            <DropZonePlaceholder
-              groupId={group.id}
-              position={0}
-              isActive={
-                draggingTaskId !== "" &&
-                targetDropZone?.groupId === group.id &&
-                targetDropZone?.position === 0
-              }
-              onLayout={handleDropZoneLayout}
-              remeasureTrigger={remeasureTrigger}
-            />
-            <Text style={styles.emptyText}>No items yet</Text>
-          </>
-        )}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={renderEmpty}
+        ListFooterComponent={renderFooter}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
       />
     </Animated.View>
   );
@@ -278,9 +282,9 @@ const styles = StyleSheet.create((theme) => ({
     borderColor: theme.colors.columnBorder,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.lg,
     paddingBottom: theme.spacing.md,
@@ -291,7 +295,7 @@ const styles = StyleSheet.create((theme) => ({
     color: theme.colors.gray900,
     flex: 1,
     letterSpacing: -0.3,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   badge: {
     backgroundColor: theme.colors.white,
@@ -299,7 +303,7 @@ const styles = StyleSheet.create((theme) => ({
     paddingHorizontal: 8,
     paddingVertical: 3,
     minWidth: 24,
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: theme.colors.gray300,
   },
@@ -317,12 +321,12 @@ const styles = StyleSheet.create((theme) => ({
     paddingTop: theme.spacing.xs,
   },
   addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: theme.spacing.sm,
     borderRadius: theme.borderRadius.md,
-    borderStyle: "dashed",
+    borderStyle: 'dashed',
     backgroundColor: theme.colors.white,
     marginTop: theme.spacing.sm,
     borderWidth: 1,
@@ -337,29 +341,29 @@ const styles = StyleSheet.create((theme) => ({
   emptyText: {
     fontSize: theme.typography.fontSize.sm,
     color: theme.colors.gray500,
-    textAlign: "center",
+    textAlign: 'center',
     paddingVertical: theme.spacing.xl,
   },
   dropZone: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   dropZonePlaceholder: {
-    width: "100%",
+    width: '100%',
     height: 56,
     borderRadius: theme.borderRadius.lg,
     borderWidth: 2,
-    borderStyle: "dashed",
-    borderColor: "#6366f1",
-    backgroundColor: "rgba(99, 102, 241, 0.1)",
-    justifyContent: "center",
-    alignItems: "center",
+    borderStyle: 'dashed',
+    borderColor: '#6366f1',
+    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   dropZoneText: {
     fontSize: theme.typography.fontSize.sm,
     fontWeight: theme.typography.fontWeight.semiBold,
-    color: "#6366f1",
+    color: '#6366f1',
   },
 }));

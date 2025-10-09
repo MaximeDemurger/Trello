@@ -1,8 +1,8 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { zustandStorage } from "@/storage/mmkv";
-import { generateId, generateTimestamp } from "@/utils/id";
-import { BOARD_COLORS, MEMBER_COLORS } from "@/constants";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { zustandStorage } from '@/storage/mmkv';
+import { generateId, generateTimestamp } from '@/utils/id';
+import { BOARD_COLORS, MEMBER_COLORS } from '@/constants';
 import type {
   Board,
   Group,
@@ -14,8 +14,7 @@ import type {
   UpdateItemInput,
   MoveItemInput,
   BoardWithGroups,
-  GroupWithItems,
-} from "@/types/board.types";
+} from '@/types/board.types';
 
 interface BoardState {
   boards: Board[];
@@ -49,13 +48,11 @@ interface BoardActions {
 
 type BoardStore = BoardState & BoardActions;
 
- 
-
 const getInitials = (name: string): string => {
   return name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
     .slice(0, 2);
 };
@@ -70,74 +67,74 @@ const initialState: BoardState = {
   items: [],
   members: [
     {
-      id: "1",
-      name: "Maxime Demurger",
-      email: "maxime@demurger.com",
-      initials: "MD",
-      color: "#6366f1",
+      id: '1',
+      name: 'Maxime Demurger',
+      email: 'maxime@demurger.com',
+      initials: 'MD',
+      color: '#6366f1',
     },
     {
-      id: "2",
-      name: "Elon Musk",
-      email: "elon@musk.com",
-      initials: "EM",
-      color: "#ec4899",
+      id: '2',
+      name: 'Elon Musk',
+      email: 'elon@musk.com',
+      initials: 'EM',
+      color: '#ec4899',
     },
     {
-      id: "3",
-      name: "Jeff Bezos",
-      email: "jeff@bezos.com",
-      initials: "JB",
-      color: "#10b981",
+      id: '3',
+      name: 'Jeff Bezos',
+      email: 'jeff@bezos.com',
+      initials: 'JB',
+      color: '#10b981',
     },
     {
-      id: "4",
-      name: "Mark Zuckerberg",
-      email: "mark@zuckerberg.com",
-      initials: "MZ",
-      color: "#f59e0b",
+      id: '4',
+      name: 'Mark Zuckerberg',
+      email: 'mark@zuckerberg.com',
+      initials: 'MZ',
+      color: '#f59e0b',
     },
     {
-      id: "5",
-      name: "Bill Gates",
-      email: "bill@gates.com",
-      initials: "BG",
-      color: "#8b5cf6",
+      id: '5',
+      name: 'Bill Gates',
+      email: 'bill@gates.com',
+      initials: 'BG',
+      color: '#8b5cf6',
     },
     {
-      id: "6",
-      name: "Warren Buffett",
-      email: "warren@buffett.com",
-      initials: "WB",
-      color: "#ef4444",
+      id: '6',
+      name: 'Warren Buffett',
+      email: 'warren@buffett.com',
+      initials: 'WB',
+      color: '#ef4444',
     },
     {
-      id: "7",
-      name: "Larry Ellison",
-      email: "larry@ellison.com",
-      initials: "LE",
-      color: "#3b82f6",
+      id: '7',
+      name: 'Larry Ellison',
+      email: 'larry@ellison.com',
+      initials: 'LE',
+      color: '#3b82f6',
     },
     {
-      id: "8",
-      name: "Steve Jobs",
-      email: "steve@jobs.com",
-      initials: "SJ",
-      color: "#a855f7",
+      id: '8',
+      name: 'Steve Jobs',
+      email: 'steve@jobs.com',
+      initials: 'SJ',
+      color: '#a855f7',
     },
     {
-      id: "9",
-      name: "Larry Page",
-      email: "larry@page.com",
-      initials: "LP",
-      color: "#f97316",
+      id: '9',
+      name: 'Larry Page',
+      email: 'larry@page.com',
+      initials: 'LP',
+      color: '#f97316',
     },
     {
-      id: "10",
-      name: "Sergey Brin",
-      email: "sergey@brin.com",
-      initials: "SB",
-      color: "#14b8a6",
+      id: '10',
+      name: 'Sergey Brin',
+      email: 'sergey@brin.com',
+      initials: 'SB',
+      color: '#14b8a6',
     },
   ],
 };
@@ -174,9 +171,7 @@ export const useBoardStore = create<BoardStore>()(
       updateBoard: (boardId, updates) => {
         set((state) => ({
           boards: state.boards.map((b) =>
-            b.id === boardId
-              ? { ...b, ...updates, updatedAt: generateTimestamp() }
-              : b
+            b.id === boardId ? { ...b, ...updates, updatedAt: generateTimestamp() } : b,
           ),
         }));
       },
@@ -211,13 +206,8 @@ export const useBoardStore = create<BoardStore>()(
       },
       createGroup: (input) => {
         const state = get();
-        const boardGroups = state.groups.filter(
-          (g) => g.boardId === input.boardId
-        );
-        const maxOrder = boardGroups.reduce(
-          (max, g) => Math.max(max, g.order),
-          -1
-        );
+        const boardGroups = state.groups.filter((g) => g.boardId === input.boardId);
+        const maxOrder = boardGroups.reduce((max, g) => Math.max(max, g.order), -1);
 
         const group: Group = {
           id: generateId(),
@@ -227,7 +217,7 @@ export const useBoardStore = create<BoardStore>()(
           createdAt: generateTimestamp(),
         };
 
-        set((state) => ({
+        set(() => ({
           groups: [...state.groups, group],
         }));
 
@@ -248,20 +238,13 @@ export const useBoardStore = create<BoardStore>()(
 
       updateGroup: (groupId, updates) => {
         set((state) => ({
-          groups: state.groups.map((g) =>
-            g.id === groupId ? { ...g, ...updates } : g
-          ),
+          groups: state.groups.map((g) => (g.id === groupId ? { ...g, ...updates } : g)),
         }));
       },
       createItem: (input) => {
         const state = get();
-        const groupItems = state.items.filter(
-          (i) => i.groupId === input.groupId
-        );
-        const maxOrder = groupItems.reduce(
-          (max, i) => Math.max(max, i.order),
-          -1
-        );
+        const groupItems = state.items.filter((i) => i.groupId === input.groupId);
+        const maxOrder = groupItems.reduce((max, i) => Math.max(max, i.order), -1);
 
         const item: Item = {
           id: generateId(),
@@ -278,7 +261,7 @@ export const useBoardStore = create<BoardStore>()(
           labels: input.labels,
         };
 
-        set((state) => ({
+        set(() => ({
           items: [...state.items, item],
         }));
 
@@ -294,9 +277,7 @@ export const useBoardStore = create<BoardStore>()(
       updateItem: (input) => {
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === input.id
-              ? { ...i, ...input, updatedAt: generateTimestamp() }
-              : i
+            i.id === input.id ? { ...i, ...input, updatedAt: generateTimestamp() } : i,
           ),
         }));
       },
@@ -304,7 +285,9 @@ export const useBoardStore = create<BoardStore>()(
       updateItemAssignees: (itemId, assignees) => {
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === itemId ? { ...i, assignedMembers: assignees, updatedAt: generateTimestamp() } : i
+            i.id === itemId
+              ? { ...i, assignedMembers: assignees, updatedAt: generateTimestamp() }
+              : i,
           ),
         }));
       },
@@ -353,20 +336,31 @@ export const useBoardStore = create<BoardStore>()(
         set((state) => ({
           items: state.items.map((i) =>
             i.id === itemId
-              ? { ...i, archived: true, originalGroupId: i.originalGroupId || i.groupId, updatedAt: generateTimestamp() }
-              : i
+              ? {
+                  ...i,
+                  archived: true,
+                  originalGroupId: i.originalGroupId || i.groupId,
+                  updatedAt: generateTimestamp(),
+                }
+              : i,
           ),
         }));
       },
       unarchiveItem: (itemId) => {
         set((state) => {
           const item = state.items.find((i) => i.id === itemId);
-          if (!item || !item.originalGroupId) return state;
+          if (!item?.originalGroupId) return state;
           return {
             items: state.items.map((i) =>
               i.id === itemId
-                ? { ...i, archived: false, groupId: i.originalGroupId!, originalGroupId: undefined, updatedAt: generateTimestamp() }
-                : i
+                ? {
+                    ...i,
+                    archived: false,
+                    groupId: i.originalGroupId!,
+                    originalGroupId: undefined,
+                    updatedAt: generateTimestamp(),
+                  }
+                : i,
             ),
           };
         });
@@ -414,99 +408,99 @@ export const useBoardStore = create<BoardStore>()(
         const state = get();
         if (state.boards.length > 0) return;
         const names = [
-          "Maxime Demurger",
-          "Elon Musk",
-          "Jeff Bezos",
-          "Mark Zuckerberg",
-          "Bill Gates",
-          "Warren Buffett",
-          "Larry Ellison",
-          "Steve Jobs",
-          "Larry Page",
-          "Sergey Brin",
-          "Jack Ma",
-          "Richard Branson",
-          "Tim Cook",
-          "Satya Nadella",
-          "Sundar Pichai",
-          "Tim Ferriss",
-          "Tony Robbins",
-          "Gary Vee",
-          "Grant Cardone",
-          "Ryan Holiday",
+          'Maxime Demurger',
+          'Elon Musk',
+          'Jeff Bezos',
+          'Mark Zuckerberg',
+          'Bill Gates',
+          'Warren Buffett',
+          'Larry Ellison',
+          'Steve Jobs',
+          'Larry Page',
+          'Sergey Brin',
+          'Jack Ma',
+          'Richard Branson',
+          'Tim Cook',
+          'Satya Nadella',
+          'Sundar Pichai',
+          'Tim Ferriss',
+          'Tony Robbins',
+          'Gary Vee',
+          'Grant Cardone',
+          'Ryan Holiday',
         ];
 
         const sampleMembers: Member[] = names.map((name) => ({
           id: generateId(),
           name,
-          email: `${name.toLowerCase().replace(/[^a-z]+/g, ".")}@example.com`,
+          email: `${name.toLowerCase().replace(/[^a-z]+/g, '.')}@example.com`,
           initials: getInitials(name),
           color: getMemberColor(name),
         }));
 
         set({ members: sampleMembers });
         const board = get().createBoard({
-          title: "My First Board",
-          description: "Welcome to BoardFlow! This is your first board.",
+          title: 'My First Board',
+          description: 'Welcome to BoardFlow! This is your first board.',
         });
-        get().updateBoard(board.id, { 
-          members: sampleMembers.slice(0, 5).map((m) => m.id) 
+        get().updateBoard(board.id, {
+          members: sampleMembers.slice(0, 5).map((m) => m.id),
         });
         const todoGroup = get().createGroup({
-          title: "To Do",
+          title: 'To Do',
           boardId: board.id,
         });
 
         const inProgressGroup = get().createGroup({
-          title: "In Progress",
+          title: 'In Progress',
           boardId: board.id,
         });
 
         const doneGroup = get().createGroup({
-          title: "Done",
+          title: 'Done',
           boardId: board.id,
         });
         const item1 = get().createItem({
-          title: "Welcome to BoardFlow",
-          description: "Try dragging this card to another column!",
+          title: 'Welcome to BoardFlow',
+          description: 'Try dragging this card to another column!',
           groupId: todoGroup.id,
           boardId: board.id,
         });
         const maxime = sampleMembers[0];
         get().updateItem({
           id: item1.id,
-          priority: "high",
-          labels: ["Getting Started", "Documentation"],
+          priority: 'high',
+          labels: ['Getting Started', 'Documentation'],
           assignedMembers: maxime ? [maxime] : [],
         });
 
         const item2 = get().createItem({
-          title: "Swipe to delete",
-          description: "Swipe left on any card to archive or delete it.",
+          title: 'Swipe to delete',
+          description: 'Swipe left on any card to archive or delete it.',
           groupId: todoGroup.id,
           boardId: board.id,
         });
         get().updateItem({
           id: item2.id,
-          priority: "medium",
+          priority: 'medium',
         });
 
         const item3 = get().createItem({
-          title: "Building new feature",
-          description: "Working on the drag and drop functionality.",
+          title: 'Building new feature',
+          description: 'Working on the drag and drop functionality.',
           groupId: inProgressGroup.id,
           boardId: board.id,
         });
         get().updateItem({
           id: item3.id,
-          priority: "high",
+          priority: 'high',
           dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          labels: ["Feature", "In Progress"],
+          labels: ['Feature', 'In Progress'],
         });
 
         get().createItem({
-          title: "Setup project",
-          description: "Initial project setup completed!",
+          title: 'Setup project',
+          description: 'Initial project setup completed!',
           groupId: doneGroup.id,
           boardId: board.id,
         });
@@ -517,7 +511,7 @@ export const useBoardStore = create<BoardStore>()(
       },
     }),
     {
-      name: "board-storage",
+      name: 'board-storage',
       storage: createJSONStorage(() => zustandStorage),
       partialize: (state) => ({
         boards: state.boards,
@@ -525,6 +519,6 @@ export const useBoardStore = create<BoardStore>()(
         items: state.items,
         members: state.members,
       }),
-    }
-  )
+    },
+  ),
 );

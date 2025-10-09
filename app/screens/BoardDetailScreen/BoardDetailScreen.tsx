@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native-unistyles";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeIn } from "react-native-reanimated";
-import {
-  GroupColumn,
-  CreateItemModal,
-  CreateGroupModal,
-  ItemDetailsModal,
-} from "@/components";
-import { useBoardStore } from "@/stores/useBoardStore";
-import type { RootStackParamList } from "@/navigation/AppNavigator";
-import { DragDropProvider } from "@/components/DragDropProvider/DragDropProvider";
-import { useDraggingContext } from "@/components/DragDropProvider/dragDropContext";
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native-unistyles';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { GroupColumn, CreateItemModal, CreateGroupModal, ItemDetailsModal } from '@/components';
+import { useBoardStore } from '@/stores/useBoardStore';
+import type { RootStackParamList } from '@/navigation/AppNavigator';
+import { DragDropProvider } from '@/components/DragDropProvider/DragDropProvider';
+import { useDraggingContext } from '@/components/DragDropProvider/dragDropContext';
 
-type BoardDetailRouteProp = RouteProp<RootStackParamList, "BoardDetail">;
+type BoardDetailRouteProp = RouteProp<RootStackParamList, 'BoardDetail'>;
 
 const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   const navigation = useNavigation();
@@ -24,9 +19,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   const { setScrollViewRef, updateScrollOffset } = useDraggingContext();
 
   const [createItemVisible, setCreateItemVisible] = useState(false);
-  const [createItemGroupId, setCreateItemGroupId] = useState<string | null>(
-    null
-  );
+  const [createItemGroupId, setCreateItemGroupId] = useState<string | null>(null);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [detailsItemId, setDetailsItemId] = useState<string | null>(null);
@@ -44,7 +37,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
     const items = useBoardStore.getState().items;
     setArchivedItems(items.filter((i) => i.boardId === boardId && i.archived));
     return unsubscribe;
-  }, [boardId]);
+  }, [boardId, getBoardWithGroups]);
 
   useEffect(() => {
     setScrollViewRef(scrollViewRef.current);
@@ -89,26 +82,23 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: board.color }]} edges={["top"]}>
+    <SafeAreaView edges={['top']} style={[styles.container, { backgroundColor: board.color }]}>
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <Pressable
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
           accessibilityLabel="Go back"
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && { opacity: 0.7 },
-          ]}
+          accessibilityRole="button"
+          onPress={() => navigation.goBack()}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
         >
-          <Ionicons name="arrow-back" size={24} color="#1f2937" />
+          <Ionicons color="#1f2937" name="arrow-back" size={24} />
         </Pressable>
 
         <View style={styles.headerContent}>
-          <Text style={styles.title} numberOfLines={1}>
+          <Text numberOfLines={1} style={styles.title}>
             {board.title}
           </Text>
           {board.description ? (
-            <Text style={styles.description} numberOfLines={1}>
+            <Text numberOfLines={1} style={styles.description}>
               {board.description}
             </Text>
           ) : null}
@@ -117,106 +107,100 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
 
       {isEmpty ? (
         <View style={[styles.scrollView, styles.emptyState]}>
-          <Ionicons name="albums-outline" size={48} color="#9ca3af" />
+          <Ionicons color="#9ca3af" name="albums-outline" size={48} />
           <Text style={styles.emptyTitle}>No groups yet</Text>
           <Text style={styles.emptySubtitle}>
             Create your first group to start organizing items.
           </Text>
           <Pressable
-            accessibilityRole="button"
             accessibilityLabel="Create group"
+            accessibilityRole="button"
             onPress={() => setCreateGroupVisible(true)}
-            style={({ pressed }) => [
-              styles.addGroupButton,
-              pressed && { opacity: 0.7 },
-            ]}
+            style={({ pressed }) => [styles.addGroupButton, pressed && { opacity: 0.7 }]}
           >
-            <Ionicons name="add" size={24} color="#6b7280" />
+            <Ionicons color="#6b7280" name="add" size={24} />
             <Text style={styles.addGroupText}>Add group</Text>
           </Pressable>
         </View>
       ) : (
         <ScrollView
           ref={scrollViewRef}
-          horizontal
-          style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
-          showsHorizontalScrollIndicator={false}
+          decelerationRate="fast"
+          horizontal
           onScroll={(event) => {
             updateScrollOffset(event.nativeEvent.contentOffset.x);
           }}
           scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
           snapToAlignment="center"
           snapToInterval={336}
-          decelerationRate="fast"
+          style={styles.scrollView}
         >
           {board.groups.map((group) => (
             <GroupColumn
               key={group.id}
-              group={group}
               boardColor={board.color}
-              onItemPress={handleItemPress}
-              onDeleteItem={handleDeleteItem}
-              onArchiveItem={handleArchiveItem}
+              group={group}
               onAddItem={handleAddItem}
+              onArchiveItem={handleArchiveItem}
+              onDeleteItem={handleDeleteItem}
+              onItemPress={handleItemPress}
             />
           ))}
 
           {archivedItems.length > 0 && (
             <GroupColumn
               key="archived"
+              boardColor={board.color}
               group={{
-                id: "archived",
-                title: "Archived",
+                id: 'archived',
+                title: 'Archived',
                 boardId,
                 order: 9999,
-                createdAt: "",
+                createdAt: '',
                 items: archivedItems,
               }}
-              boardColor={board.color}
-              onItemPress={handleItemPress}
-              onDeleteItem={handleDeleteItem}
-              onArchiveItem={handleUnarchiveItem}
               onAddItem={() => {}}
+              onArchiveItem={handleUnarchiveItem}
+              onDeleteItem={handleDeleteItem}
+              onItemPress={handleItemPress}
             />
           )}
 
           <Pressable
-            accessibilityRole="button"
             accessibilityLabel="Add group"
+            accessibilityRole="button"
             onPress={() => setCreateGroupVisible(true)}
-            style={({ pressed }) => [
-              styles.addGroupButton,
-              pressed && { opacity: 0.7 },
-            ]}
+            style={({ pressed }) => [styles.addGroupButton, pressed && { opacity: 0.7 }]}
           >
-            <Ionicons name="add" size={24} color="#6b7280" />
+            <Ionicons color="#6b7280" name="add" size={24} />
             <Text style={styles.addGroupText}>Add group</Text>
           </Pressable>
         </ScrollView>
       )}
       <CreateGroupModal
         boardId={boardId}
-        visible={createGroupVisible}
         onClose={() => setCreateGroupVisible(false)}
+        visible={createGroupVisible}
       />
       <CreateItemModal
         boardId={boardId}
-        visible={createItemVisible}
         groupId={createItemGroupId}
         onClose={() => {
           setCreateItemVisible(false);
           setCreateItemGroupId(null);
         }}
+        visible={createItemVisible}
       />
       <ItemDetailsModal
         boardId={boardId}
         itemId={detailsItemId}
-        visible={detailsVisible}
         onClose={() => {
           setDetailsVisible(false);
           setDetailsItemId(null);
         }}
+        visible={detailsVisible}
       />
     </SafeAreaView>
   );
@@ -239,8 +223,8 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.backgroundMedium,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.lg,
     borderBottomWidth: 0,
@@ -249,8 +233,8 @@ const styles = StyleSheet.create((theme) => ({
   backButton: {
     width: 44,
     height: 44,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: theme.spacing.md,
     borderRadius: theme.borderRadius.md,
     backgroundColor: theme.colors.gray100,
@@ -277,14 +261,14 @@ const styles = StyleSheet.create((theme) => ({
   },
   addGroupButton: {
     width: 280,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: theme.borderRadius.xl,
     borderWidth: 2,
     borderColor: theme.colors.borderMedium,
-    borderStyle: "dashed",
+    borderStyle: 'dashed',
     padding: theme.spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 200,
   },
   addGroupText: {
@@ -295,8 +279,8 @@ const styles = StyleSheet.create((theme) => ({
   },
   errorContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     fontSize: theme.typography.fontSize.lg,
@@ -304,8 +288,8 @@ const styles = StyleSheet.create((theme) => ({
   },
   emptyState: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: theme.spacing.md,
   },
   emptyTitle: {
@@ -316,7 +300,7 @@ const styles = StyleSheet.create((theme) => ({
   emptySubtitle: {
     fontSize: theme.typography.fontSize.base,
     color: theme.colors.gray500,
-    textAlign: "center",
+    textAlign: 'center',
     maxWidth: 300,
   },
 }));

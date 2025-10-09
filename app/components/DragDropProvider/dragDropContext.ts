@@ -1,6 +1,6 @@
-import { ScrollView } from "react-native";
-import { SharedValue } from "react-native-reanimated";
-import { PropsWithChildren, createContext, useContext } from "react";
+import { ScrollView } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
+import { createContext, useContext } from 'react';
 
 export type DropZone = {
   groupId: string;
@@ -28,7 +28,7 @@ export type DraggingContext = {
 
 export const DraggingContext = createContext<DraggingContext>({
   setDraggingTask: () => {},
-  draggingTaskId: "",
+  draggingTaskId: '',
   dragX: { value: 0 } as SharedValue<number>,
   dragY: { value: 0 } as SharedValue<number>,
   panGesture: undefined,

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import * as Haptics from "expo-haptics";
-import { BottomSheet } from "../BottomSheet/BottomSheet";
-import { useBoardStore } from "@/stores/useBoardStore";
-import { styles } from "./CreateGroupModal.styles";
-import { FooterAction } from "@/components/FooterAction/FooterAction";
+import React, { useState } from 'react';
+import { View, Text } from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import * as Haptics from 'expo-haptics';
+import { BottomSheet } from '../BottomSheet/BottomSheet';
+import { useBoardStore } from '@/stores/useBoardStore';
+import { styles } from './CreateGroupModal.styles';
+import { FooterAction } from '@/components/FooterAction/FooterAction';
 
 type CreateGroupModalProps = {
   boardId: string;
@@ -20,13 +20,13 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
 
   const { createGroup } = useBoardStore();
 
   const handleClose = () => {
     onClose();
-    setTitle("");
+    setTitle('');
   };
 
   const handleCreate = () => {
@@ -45,19 +45,17 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
     }
   };
 
+  const renderFooter = () => (
+    <FooterAction onClose={handleClose} onCreate={handleCreate} title={title} />
+  );
+
   return (
     <BottomSheet
-      visible={visible}
-      onClose={handleClose}
-      snapPoints={["80%"]}
+      footerComponent={renderFooter}
       index={1}
-      footerComponent={() => (
-        <FooterAction
-          onClose={handleClose}
-          onCreate={handleCreate}
-          title={title}
-        />
-      )}
+      onClose={handleClose}
+      snapPoints={['80%']}
+      visible={visible}
     >
       <View style={styles.container}>
         <Text style={styles.title}>Create Group</Text>
@@ -65,11 +63,11 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Group Name</Text>
           <BottomSheetTextInput
-            style={styles.input}
-            value={title}
             onChangeText={setTitle}
             placeholder="Enter group name"
             placeholderTextColor="#9ca3af"
+            style={styles.input}
+            value={title}
           />
         </View>
       </View>

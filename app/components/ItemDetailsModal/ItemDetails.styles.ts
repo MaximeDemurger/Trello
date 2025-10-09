@@ -1,13 +1,13 @@
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet } from 'react-native-unistyles';
 
 export const styles = StyleSheet.create((theme) => ({
   container: {
     flex: 1,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: theme.spacing.xl,
     paddingRight: theme.spacing.xs,
   },
@@ -23,8 +23,8 @@ export const styles = StyleSheet.create((theme) => ({
     height: 36,
     borderRadius: theme.borderRadius.full,
     backgroundColor: theme.colors.gray100,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginLeft: theme.spacing.md,
   },
   content: {
@@ -40,8 +40,8 @@ export const styles = StyleSheet.create((theme) => ({
     ...theme.shadows.sm,
   },
   sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: theme.spacing.md,
   },
   sectionTitle: {
@@ -60,6 +60,7 @@ export const styles = StyleSheet.create((theme) => ({
     fontWeight: theme.typography.fontWeight.medium,
   },
   input: {
+    flex: 1,
     backgroundColor: theme.colors.gray50,
     borderWidth: 1,
     borderColor: theme.colors.gray200,
@@ -74,21 +75,25 @@ export const styles = StyleSheet.create((theme) => ({
   },
   textarea: {
     minHeight: 96,
-    textAlignVertical: "top" as const,
+    textAlignVertical: 'top' as const,
   },
   mutedText: {
     fontSize: theme.typography.fontSize.base,
     color: theme.colors.gray500,
   },
+  mutedTextPressed: {
+    opacity: 0.8,
+  },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: theme.spacing.sm,
   },
   chipsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
+    marginVertical: theme.spacing.md,
   },
   chip: {
     paddingHorizontal: theme.spacing.md,
@@ -108,22 +113,22 @@ export const styles = StyleSheet.create((theme) => ({
     color: theme.colors.white,
   },
   chipDanger: {
-    backgroundColor: "#fee2e2",
+    backgroundColor: '#fee2e2',
   },
   chipDangerText: {
-    color: "#991b1b",
+    color: '#991b1b',
   },
   labelsEditor: {
     gap: theme.spacing.md,
   },
   labelsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
   labelEditable: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.borderRadius.full,
@@ -139,8 +144,8 @@ export const styles = StyleSheet.create((theme) => ({
     width: 20,
     height: 20,
     borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.colors.gray200,
   },
   primaryButton: {
@@ -174,8 +179,8 @@ export const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.borderRadius.md,
   },
   detailRow: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.borderRadius.md,
@@ -189,7 +194,7 @@ export const styles = StyleSheet.create((theme) => ({
     fontSize: theme.typography.fontSize.xs,
     color: theme.colors.gray500,
     fontWeight: theme.typography.fontWeight.medium,
-    textTransform: "uppercase" as const,
+    textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
     marginBottom: theme.spacing.xs,
   },
@@ -204,13 +209,13 @@ export const styles = StyleSheet.create((theme) => ({
     borderRadius: theme.borderRadius.full,
   },
   priorityHigh: {
-    backgroundColor: "#fee2e2",
+    backgroundColor: '#fee2e2',
   },
   priorityMedium: {
-    backgroundColor: "#fef3c7",
+    backgroundColor: '#fef3c7',
   },
   priorityLow: {
-    backgroundColor: "#dbeafe",
+    backgroundColor: '#dbeafe',
   },
   priorityText: {
     fontSize: theme.typography.fontSize.xs,
@@ -218,8 +223,8 @@ export const styles = StyleSheet.create((theme) => ({
     color: theme.colors.gray900,
   },
   labelsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
   label: {
@@ -238,9 +243,9 @@ export const styles = StyleSheet.create((theme) => ({
     borderTopColor: theme.colors.gray200,
   },
   deleteButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: theme.spacing.md,
     marginHorizontal: theme.spacing.lg,
     marginTop: theme.spacing.lg,
@@ -254,24 +259,25 @@ export const styles = StyleSheet.create((theme) => ({
     color: theme.colors.error,
   },
   addMemberButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
   },
   membersList: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: -theme.spacing.xs,
   },
   memberAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
     borderColor: theme.colors.white,
+    backgroundColor: theme.colors.gray100,
   },
   memberAvatarText: {
     fontSize: theme.typography.fontSize.xs,

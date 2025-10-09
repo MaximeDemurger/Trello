@@ -3,7 +3,7 @@
  * Design tokens and theme setup
  */
 
-import { StyleSheet } from 'react-native-unistyles'
+import { StyleSheet } from 'react-native-unistyles';
 
 // Design Tokens
 const spacing = {
@@ -15,7 +15,7 @@ const spacing = {
   xxl: 24,
   xxxl: 32,
   xxxxl: 48,
-} as const
+} as const;
 
 const borderRadius = {
   xs: 4,
@@ -25,7 +25,7 @@ const borderRadius = {
   xl: 20,
   xxl: 24,
   full: 9999,
-} as const
+} as const;
 
 const typography = {
   fontFamily: {
@@ -51,7 +51,7 @@ const typography = {
     semiBold: '600' as const,
     bold: '700' as const,
   },
-} as const
+} as const;
 
 // Color Palette
 const colors = {
@@ -59,7 +59,7 @@ const colors = {
   primary: '#6366f1',
   primaryLight: '#818cf8',
   primaryDark: '#4f46e5',
-  
+
   // Neutral colors
   white: '#ffffff',
   black: '#000000',
@@ -73,7 +73,7 @@ const colors = {
   gray700: '#374151',
   gray800: '#1f2937',
   gray900: '#111827',
-  
+
   // Semantic colors
   success: '#10b981',
   successLight: '#34d399',
@@ -83,7 +83,7 @@ const colors = {
   errorLight: '#f87171',
   info: '#3b82f6',
   infoLight: '#60a5fa',
-  
+
   // Board colors
   blue: '#6366f1',
   pink: '#ec4899',
@@ -91,24 +91,24 @@ const colors = {
   orange: '#f59e0b',
   purple: '#8b5cf6',
   red: '#ef4444',
-  
+
   // Background colors
   background: '#f9fafb',
   backgroundDark: '#111827',
   backgroundMedium: '#e2e8f0',
   surface: '#ffffff',
   surfaceDark: '#1f2937',
-  
+
   // Column colors
   columnBackground: '#f1f5f9',
   columnBorder: '#e2e8f0',
-  
+
   // Border colors
   border: '#e5e7eb',
   borderLight: '#e2e8f0',
   borderMedium: '#cbd5e1',
   borderDark: '#374151',
-} as const
+} as const;
 
 // Shadows
 const shadows = {
@@ -140,7 +140,7 @@ const shadows = {
     shadowRadius: 25,
     elevation: 20,
   },
-} as const
+} as const;
 
 // Light Theme Definition
 const lightTheme = {
@@ -149,10 +149,10 @@ const lightTheme = {
   borderRadius,
   typography,
   shadows,
-  
+
   // Helper functions
   radius: (size: keyof typeof borderRadius) => borderRadius[size],
-  
+
   // Component-specific tokens
   components: {
     card: {
@@ -187,7 +187,7 @@ const lightTheme = {
       handleColor: colors.gray300,
     },
   },
-} as const
+} as const;
 
 // Configure Unistyles with the light theme
 StyleSheet.configure({
@@ -197,14 +197,13 @@ StyleSheet.configure({
   settings: {
     adaptiveThemes: false,
   },
-})
+});
 
 // Type declarations for TypeScript
 declare module 'react-native-unistyles' {
   export interface UnistylesThemes {
-    light: typeof lightTheme
+    light: typeof lightTheme;
   }
 }
 
-export type AppTheme = typeof lightTheme
-
+export type AppTheme = typeof lightTheme;

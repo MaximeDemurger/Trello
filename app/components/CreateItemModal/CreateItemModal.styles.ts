@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native-unistyles";
+import { StyleSheet } from 'react-native-unistyles';
 
 export const styles = StyleSheet.create((theme) => ({
   container: {
@@ -31,11 +31,11 @@ export const styles = StyleSheet.create((theme) => ({
   },
   textArea: {
     minHeight: 100,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   chipsRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: theme.spacing.sm,
   },
   chip: {
@@ -56,24 +56,31 @@ export const styles = StyleSheet.create((theme) => ({
     color: theme.colors.white,
   },
   addMemberButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
   },
   membersList: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: -theme.spacing.xs,
   },
   memberAvatar: {
     width: 32,
     height: 32,
+  },
+  memberAvatarInner: {
+    width: 32,
+    height: 32,
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 2,
     borderColor: theme.colors.white,
+  },
+  memberAvatarMore: {
+    backgroundColor: theme.colors.gray500,
   },
   memberAvatarText: {
     fontSize: theme.typography.fontSize.xs,
@@ -85,19 +92,88 @@ export const styles = StyleSheet.create((theme) => ({
     color: theme.colors.gray600,
     fontWeight: theme.typography.fontWeight.medium,
   },
+  dateText: {
+    color: theme.colors.gray900,
+  },
+  datePlaceholder: {
+    color: theme.colors.gray400,
+  },
   datePicker: {
-    marginTop: theme.spacing.sm,
+    marginTop: 8,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.md,
+    borderRadius: 12,
     backgroundColor: theme.colors.white,
-    padding: theme.spacing.sm,
-    gap: theme.spacing.xs,
+    padding: 8,
   },
   dateHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+    marginBottom: 4,
+  },
+  navButton: {
+    width: 28,
+    height: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 14,
+    backgroundColor: theme.colors.gray100,
+  },
+  monthText: {
+    fontSize: 12,
+    color: theme.colors.gray900,
+    fontWeight: '600',
+  },
+  weekDaysRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 2,
+  },
+  dayLabel: {
+    width: 32,
+    textAlign: 'center',
+    fontSize: 12,
+    color: theme.colors.gray600,
+    fontWeight: '500',
+  },
+  calendarRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  emptyCell: {
+    width: 32,
+    height: 32,
+  },
+  dayCell: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.gray100,
+  },
+  dayCellSelected: {
+    backgroundColor: theme.colors.primary,
+  },
+  dayCellToday: {
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+  },
+  dayText: {
+    fontSize: 12,
+    color: theme.colors.gray900,
+    fontWeight: '600',
+  },
+  dayTextSelected: {
+    color: theme.colors.white,
+  },
+  oldDateHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: theme.spacing.xs,
     marginBottom: theme.spacing.xs,
   },
@@ -109,26 +185,26 @@ export const styles = StyleSheet.create((theme) => ({
   dateNavButton: {
     width: 28,
     height: 28,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 14,
     backgroundColor: theme.colors.gray100,
   },
   dateWeekRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 2,
   },
   dateWeekDay: {
     width: 32,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: theme.typography.fontSize.xs,
     color: theme.colors.gray500,
     fontWeight: theme.typography.fontWeight.medium,
   },
   dateGridRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: 4,
   },
   dateCellBlank: {
@@ -139,8 +215,8 @@ export const styles = StyleSheet.create((theme) => ({
     width: 32,
     height: 32,
     borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: theme.colors.gray100,
   },
   dateCellSelected: {
