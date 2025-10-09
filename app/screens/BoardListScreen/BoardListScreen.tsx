@@ -26,6 +26,7 @@ export const BoardListScreen: React.FC = () => {
   const [isCreateOrgVisible, setIsCreateOrgVisible] = useState(false);
   const [orgName, setOrgName] = useState('');
   const [hasOrganization, setHasOrganization] = useState(true);
+  const [isOrgLoading, setIsOrgLoading] = useState(false);
 
   // React Query hooks
   const { data: boards = [], isLoading, error } = useBoards();
@@ -36,10 +37,20 @@ export const BoardListScreen: React.FC = () => {
     if (!user?.id) return;
 
     (async () => {
-      const { organizations } = await fetchUserOrganizations(user.id);
-      const firstOrgId = organizations?.[0]?.id ?? null;
-      setDefaultOrganizationId(firstOrgId);
-      setHasOrganization(Boolean(organizations && organizations.length > 0));
+      setIsOrgLoading(true);
+      try {
+        const { organizations } = await fetchUserOrganizations(user.id);
+        const firstOrgId = organizations?.[0]?.id ?? null;
+        setDefaultOrganizationId(firstOrgId);
+        setHasOrganization(Boolean(organizations && organizations.length > 0));
+      } catch (e) {
+        console.error('Failed to fetch organizations:', e);
+      } finally {
+        setTimeout(() => {
+          setHasOrganization(false);
+          setIsOrgLoading(false);
+        }, 1000);
+      }
     })();
   }, [user?.id]);
 
@@ -51,7 +62,14 @@ export const BoardListScreen: React.FC = () => {
     const title = newBoardTitle.trim();
     if (!title || !defaultOrganizationId) return;
 
-    console.log('Creating board with title:', title, 'and description:', newBoardDescription.trim(), 'and color:', newBoardColor);
+    console.log(
+      'Creating board with title:',
+      title,
+      'and description:',
+      newBoardDescription.trim(),
+      'and color:',
+      newBoardColor,
+    );
 
     try {
       await createBoardMutation.mutateAsync({
@@ -123,7 +141,12 @@ export const BoardListScreen: React.FC = () => {
 
   // Get icon based on board
   const getIconName = (index: number): keyof typeof Ionicons.glyphMap => {
-    const icons: (keyof typeof Ionicons.glyphMap)[] = ['briefcase', 'rocket', 'people', 'trending-up'];
+    const icons: (keyof typeof Ionicons.glyphMap)[] = [
+      'briefcase',
+      'rocket',
+      'people',
+      'trending-up',
+    ];
     return icons[index % icons.length];
   };
 
@@ -176,10 +199,7 @@ export const BoardListScreen: React.FC = () => {
               <>
                 <View style={styles.avatarStack}>
                   {board.members.slice(0, 3).map((member, idx) => (
-                    <View
-                      key={member.id}
-                      style={[styles.avatar, { marginLeft: idx > 0 ? -8 : 0 }]}
-                    >
+                    <View key={member.id} style={[styles.avatar, { marginLeft: idx > 0 ? -8 : 0 }]}>
                       {member.avatar_url ? (
                         <Image source={{ uri: member.avatar_url }} style={styles.avatarImage} />
                       ) : (
@@ -235,121 +255,133 @@ export const BoardListScreen: React.FC = () => {
             <Text style={styles.headerSubtitle}>Good morning, {displayName}</Text>
           </View>
         </View>
-        <View style={styles.headerRight}>
-          <Pressable hitSlop={8}>
-            <Ionicons name="notifications-outline" size={18} color="#374151" />
-          </Pressable>
-          <Pressable hitSlop={8}>
-            <Ionicons name="search-outline" size={18} color="#374151" />
-          </Pressable>
-        </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* No Organization State */}
-        {!hasOrganization && (
-          <View style={styles.orgEmptyContainer}>
-            <Ionicons name="business-outline" size={48} color="#9ca3af" />
-            <Text style={styles.orgEmptyTitle}>No organization yet</Text>
-            <Text style={styles.orgEmptySubtext}>Create your first organization to start creating boards</Text>
-            <Pressable
-              onPress={() => setIsCreateOrgVisible(true)}
-              style={({ pressed }) => [styles.emptyButton, pressed && { opacity: 0.9 }]}
-            >
-              <Ionicons name="add" size={20} color="white" />
-              <Text style={styles.emptyButtonText}>Create Organization</Text>
-            </Pressable>
+        {isOrgLoading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="rgb(99, 102, 241)" />
+            <Text style={styles.loadingText}>Checking organization...</Text>
           </View>
-        )}
-
-        {/* If no org, we stop rendering the rest */}
-        {hasOrganization && (
+        ) : (
           <>
-        {/* Stats Cards */}
-        <View style={styles.statsSection}>
-          <LinearGradient
-            colors={['rgb(99, 102, 241)', 'rgb(139, 92, 246)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.statCard}
-          >
-            <Text style={styles.statCardValue}>{totalBoards}</Text>
-            <Text style={styles.statCardLabel}>Active Boards</Text>
-          </LinearGradient>
+            {/* No Organization State */}
+            {!hasOrganization && (
+              <View style={styles.orgEmptyContainer}>
+                <Ionicons name="business-outline" size={48} color="#9ca3af" />
+                <Text style={styles.orgEmptyTitle}>No organization yet</Text>
+                <Text style={styles.orgEmptySubtext}>
+                  Create your first organization to start creating boards
+                </Text>
+                <Pressable
+                  onPress={() => setIsCreateOrgVisible(true)}
+                  style={({ pressed }) => [styles.emptyButton, pressed && { opacity: 0.9 }]}
+                >
+                  <Ionicons name="add" size={20} color="white" />
+                  <Text style={styles.emptyButtonText}>Create Organization</Text>
+                </Pressable>
+              </View>
+            )}
 
-          <View style={[styles.statCard, { backgroundColor: 'rgb(6, 182, 212)' }]}>
-            <Text style={styles.statCardValue}>{totalItems}</Text>
-            <Text style={styles.statCardLabel}>Total Items</Text>
-          </View>
+            {/* If no org, we stop rendering the rest */}
+            {hasOrganization && (
+              <>
+                {/* Stats Cards */}
+                <View style={styles.statsSection}>
+                  <LinearGradient
+                    colors={['rgb(99, 102, 241)', 'rgb(139, 92, 246)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.statCard}
+                  >
+                    <Text style={styles.statCardValue}>{totalBoards}</Text>
+                    <Text style={styles.statCardLabel}>Active Boards</Text>
+                  </LinearGradient>
 
-          <LinearGradient
-            colors={['rgb(16, 185, 129)', 'rgb(34, 197, 94)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.statCard}
-          >
-            <Text style={styles.statCardValue}>{completionRate}%</Text>
-            <Text style={styles.statCardLabel}>Completed</Text>
-          </LinearGradient>
-        </View>
+                  <View style={[styles.statCard, { backgroundColor: 'rgb(6, 182, 212)' }]}>
+                    <Text style={styles.statCardValue}>{totalItems}</Text>
+                    <Text style={styles.statCardLabel}>Total Items</Text>
+                  </View>
 
-        {/* Action Buttons */}
-        <View style={styles.actionsSection}>
-          <Pressable
-            onPress={() => setIsCreateModalVisible(true)}
-            style={({ pressed }) => [styles.newBoardButton, pressed && { opacity: 0.9 }]}
-          >
-            <Ionicons name="add" size={14} color="white" />
-            <Text style={styles.newBoardButtonText}>New Board</Text>
-          </Pressable>
+                  <LinearGradient
+                    colors={['rgb(16, 185, 129)', 'rgb(34, 197, 94)']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.statCard}
+                  >
+                    <Text style={styles.statCardValue}>{completionRate}%</Text>
+                    <Text style={styles.statCardLabel}>Completed</Text>
+                  </LinearGradient>
+                </View>
 
-          <Pressable style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}>
-            <MaterialCommunityIcons name="filter-variant" size={14} color="#374151" />
-            <Text style={styles.filterButtonText}>Filter</Text>
-          </Pressable>
+                {/* Action Buttons */}
+                <View style={styles.actionsSection}>
+                  <Pressable
+                    onPress={() => setIsCreateModalVisible(true)}
+                    style={({ pressed }) => [styles.newBoardButton, pressed && { opacity: 0.9 }]}
+                  >
+                    <Ionicons name="add" size={14} color="white" />
+                    <Text style={styles.newBoardButtonText}>New Board</Text>
+                  </Pressable>
 
-          <Pressable style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}>
-            <MaterialCommunityIcons name="sort" size={14} color="#374151" />
-            <Text style={styles.filterButtonText}>Sort</Text>
-          </Pressable>
+                  <Pressable
+                    style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}
+                  >
+                    <MaterialCommunityIcons name="filter-variant" size={14} color="#374151" />
+                    <Text style={styles.filterButtonText}>Filter</Text>
+                  </Pressable>
 
-          <Pressable onPress={() => setIsCreateOrgVisible(true)} style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}>
-            <Ionicons name="business-outline" size={14} color="#374151" />
-            <Text style={styles.filterButtonText}>New Org</Text>
-          </Pressable>
-        </View>
+                  <Pressable
+                    style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}
+                  >
+                    <MaterialCommunityIcons name="sort" size={14} color="#374151" />
+                    <Text style={styles.filterButtonText}>Sort</Text>
+                  </Pressable>
 
-        {/* Boards List */}
-        <View style={styles.boardsSection}>
-          {isLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="rgb(99, 102, 241)" />
-              <Text style={styles.loadingText}>Loading boards...</Text>
-            </View>
-          ) : error ? (
-            <View style={styles.errorContainer}>
-              <Ionicons name="alert-circle" size={48} color="#ef4444" />
-              <Text style={styles.errorText}>Failed to load boards</Text>
-              <Text style={styles.errorSubtext}>{error.message}</Text>
-            </View>
-          ) : boards.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="folder-open-outline" size={64} color="#d1d5db" />
-              <Text style={styles.emptyText}>No boards yet</Text>
-              <Text style={styles.emptySubtext}>Create your first board to get started</Text>
-              <Pressable
-                onPress={() => setIsCreateModalVisible(true)}
-                style={({ pressed }) => [styles.emptyButton, pressed && { opacity: 0.9 }]}
-              >
-                <Ionicons name="add" size={20} color="white" />
-                <Text style={styles.emptyButtonText}>Create Board</Text>
-              </Pressable>
-            </View>
-          ) : (
-            boards.map((board, index) => renderBoardCard(board, index))
-          )}
-        </View>
-        </>
+                  <Pressable
+                    onPress={() => setIsCreateOrgVisible(true)}
+                    style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}
+                  >
+                    <Ionicons name="business-outline" size={14} color="#374151" />
+                    <Text style={styles.filterButtonText}>New Org</Text>
+                  </Pressable>
+                </View>
+
+                {/* Boards List */}
+                <View style={styles.boardsSection}>
+                  {isLoading ? (
+                    <View style={styles.loadingContainer}>
+                      <ActivityIndicator size="large" color="rgb(99, 102, 241)" />
+                      <Text style={styles.loadingText}>Loading boards...</Text>
+                    </View>
+                  ) : error ? (
+                    <View style={styles.errorContainer}>
+                      <Ionicons name="alert-circle" size={48} color="#ef4444" />
+                      <Text style={styles.errorText}>Failed to load boards</Text>
+                      <Text style={styles.errorSubtext}>{error.message}</Text>
+                    </View>
+                  ) : boards.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                      <Ionicons name="folder-open-outline" size={64} color="#d1d5db" />
+                      <Text style={styles.emptyText}>No boards yet</Text>
+                      <Text style={styles.emptySubtext}>
+                        Create your first board to get started
+                      </Text>
+                      <Pressable
+                        onPress={() => setIsCreateModalVisible(true)}
+                        style={({ pressed }) => [styles.emptyButton, pressed && { opacity: 0.9 }]}
+                      >
+                        <Ionicons name="add" size={20} color="white" />
+                        <Text style={styles.emptyButtonText}>Create Board</Text>
+                      </Pressable>
+                    </View>
+                  ) : (
+                    boards.map((board, index) => renderBoardCard(board, index))
+                  )}
+                </View>
+              </>
+            )}
+          </>
         )}
       </ScrollView>
 
