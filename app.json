@@ -36,6 +36,10 @@
       ],
       "expo-font",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "supabaseUrl": "https://rpddulkppldqxvcfovjl.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwZGR1bGtwcGxkcXh2Y2ZvdmpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk5OTk1NDYsImV4cCI6MjA3NTU3NTU0Nn0.QyFIVJvUDVBerwmDXMDcSEMtvflSt7qD-tNWihNgoYU"
+    }
   }
 }

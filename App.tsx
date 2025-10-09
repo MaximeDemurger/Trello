@@ -12,6 +12,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { AppNavigator } from "./app/navigation/AppNavigator";
 import { useBoardStore } from "./app/stores/useBoardStore";
+import { AuthProvider } from "./app/providers/AuthProvider";
+import { QueryProvider } from "./app/providers/QueryProvider";
 
 export default function App() {
   const initializeDefaultData = useBoardStore(
@@ -26,9 +28,13 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <BottomSheetModalProvider>
-          <AppNavigator />
-        </BottomSheetModalProvider>
+        <QueryProvider>
+          <BottomSheetModalProvider>
+            <AuthProvider>
+              <AppNavigator />
+            </AuthProvider>
+          </BottomSheetModalProvider>
+        </QueryProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
