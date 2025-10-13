@@ -1,33 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, ScrollView, Pressable, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet } from "react-native-unistyles";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import Animated, { FadeIn } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
-import {
-  GroupColumn,
-  CreateItemModal,
-  CreateGroupModal,
-  ItemDetailsModal,
-} from "@/components";
-import { useBoardStore } from "@/stores/useBoardStore";
-import type { RootStackParamList } from "@/navigation/AppNavigator";
-import { DragDropProvider } from "@/components/DragDropProvider/DragDropProvider";
-import { useDraggingContext } from "@/components/DragDropProvider/dragDropContext";
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, Pressable, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native-unistyles';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { GroupColumn, CreateItemModal, CreateGroupModal, ItemDetailsModal } from '@/components';
+import { useBoardStore } from '@/stores/useBoardStore';
+import type { RootStackParamList } from '@/navigation/AppNavigator';
+import { DragDropProvider } from '@/components/DragDropProvider/DragDropProvider';
+import { useDraggingContext } from '@/components/DragDropProvider/dragDropContext';
 
-type BoardDetailRouteProp = RouteProp<RootStackParamList, "BoardDetail">;
+type BoardDetailRouteProp = RouteProp<RootStackParamList, 'BoardDetail'>;
 
 const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const scrollViewRef = useRef<ScrollView>(null);
   const { setScrollViewRef, updateScrollOffset } = useDraggingContext();
 
   const [createItemVisible, setCreateItemVisible] = useState(false);
-  const [createItemGroupId, setCreateItemGroupId] = useState<string | null>(
-    null
-  );
+  const [createItemGroupId, setCreateItemGroupId] = useState<string | null>(null);
   const [createGroupVisible, setCreateGroupVisible] = useState(false);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [detailsItemId, setDetailsItemId] = useState<string | null>(null);
@@ -103,40 +97,51 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
   const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
         <Pressable
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
           accessibilityLabel="Go back"
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && { opacity: 0.7 },
-          ]}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.7 }]}
         >
           <Ionicons name="arrow-back" size={24} color="#1f2937" />
         </Pressable>
 
         <View style={styles.headerContent}>
-          <Text style={styles.title} numberOfLines={1}>{board.title}</Text>
+          <Text style={styles.title} numberOfLines={1}>
+            {board.title}
+          </Text>
           <View style={styles.metaRow}>
-            <Text style={styles.metaText}>{totalItems} items • {totalMembers} members</Text>
+            <Text style={styles.metaText}>
+              {totalItems} items • {totalMembers} members
+            </Text>
           </View>
         </View>
 
         <View style={styles.headerActions}>
-          <Pressable accessibilityLabel="Members" hitSlop={8} style={styles.headerIconBtn}>
+          <Pressable
+            accessibilityLabel="Members"
+            hitSlop={8}
+            style={styles.headerIconBtn}
+            onPress={() => navigation.navigate('BoardMembers', { boardId })}
+          >
             <Ionicons name="people-outline" size={18} color="#6b7280" />
           </Pressable>
-          <Pressable accessibilityLabel="More" hitSlop={8} style={styles.headerIconBtn}>
-            <Ionicons name="ellipsis-vertical" size={18} color="#6b7280" />
+          <Pressable
+            accessibilityLabel="Settings"
+            hitSlop={8}
+            style={styles.headerIconBtn}
+            onPress={() => navigation.navigate('BoardSettings', { boardId })}
+          >
+            <Ionicons name="settings-outline" size={18} color="#6b7280" />
           </Pressable>
         </View>
       </Animated.View>
 
       {/* Progress Banner */}
       <LinearGradient
-        colors={["#6366f1", "#8b5cf6"]}
+        colors={['#6366f1', '#8b5cf6']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.progressBanner}
@@ -146,17 +151,29 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
           <Text style={styles.progressLabel}>Project Progress</Text>
         </View>
         <View style={styles.bannerAvatars}>
-          {Array.from(new Set(allItems.flatMap((it: any) => it.assignedMembers || [] )).values())
+          {Array.from(new Set(allItems.flatMap((it: any) => it.assignedMembers || [])).values())
             .slice(0, 3)
             .map((m: any, idx: number) => (
-              <View key={m.id || idx} style={[styles.bannerAvatar, { marginLeft: idx === 0 ? 0 : -8, backgroundColor: m?.color || 'rgba(255,255,255,0.25)' }]}> 
+              <View
+                key={m.id || idx}
+                style={[
+                  styles.bannerAvatar,
+                  {
+                    marginLeft: idx === 0 ? 0 : -8,
+                    backgroundColor: m?.color || 'rgba(255,255,255,0.25)',
+                  },
+                ]}
+              >
                 {m?.avatar ? (
-                  <Image source={{ uri: m.avatar }} style={{ width: 28, height: 28, borderRadius: 14 }} />
+                  <Image
+                    source={{ uri: m.avatar }}
+                    style={{ width: 28, height: 28, borderRadius: 14 }}
+                  />
                 ) : (
                   <Text style={styles.bannerAvatarText}>{m?.initials || '?'}</Text>
                 )}
               </View>
-          ))}
+            ))}
         </View>
       </LinearGradient>
 
@@ -171,10 +188,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
             accessibilityRole="button"
             accessibilityLabel="Create group"
             onPress={() => setCreateGroupVisible(true)}
-            style={({ pressed }) => [
-              styles.addGroupButton,
-              pressed && { opacity: 0.7 },
-            ]}
+            style={({ pressed }) => [styles.addGroupButton, pressed && { opacity: 0.7 }]}
           >
             <Ionicons name="add" size={24} color="#6b7280" />
             <Text style={styles.addGroupText}>Add group</Text>
@@ -211,11 +225,11 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
             <GroupColumn
               key="archived"
               group={{
-                id: "archived",
-                title: "Archived",
+                id: 'archived',
+                title: 'Archived',
                 boardId,
                 order: 9999,
-                createdAt: "",
+                createdAt: '',
                 items: archivedItems,
               }}
               boardColor={board.color}
@@ -230,10 +244,7 @@ const BoardContent: React.FC<{ boardId: string }> = ({ boardId }) => {
             accessibilityRole="button"
             accessibilityLabel="Add group"
             onPress={() => setCreateGroupVisible(true)}
-            style={({ pressed }) => [
-              styles.addGroupButton,
-              pressed && { opacity: 0.7 },
-            ]}
+            style={({ pressed }) => [styles.addGroupButton, pressed && { opacity: 0.7 }]}
           >
             <Ionicons name="add" size={24} color="#6b7280" />
             <Text style={styles.addGroupText}>Add group</Text>
@@ -295,8 +306,8 @@ const styles = StyleSheet.create((theme) => ({
     backgroundColor: theme.colors.white,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.lg,
     borderBottomWidth: 0,
@@ -305,8 +316,8 @@ const styles = StyleSheet.create((theme) => ({
   backButton: {
     width: 44,
     height: 44,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: theme.spacing.md,
     borderRadius: theme.borderRadius.md,
     backgroundColor: theme.colors.gray100,
@@ -385,14 +396,14 @@ const styles = StyleSheet.create((theme) => ({
   },
   addGroupButton: {
     width: 280,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: theme.borderRadius.xl,
     borderWidth: 2,
     borderColor: theme.colors.borderMedium,
-    borderStyle: "dashed",
+    borderStyle: 'dashed',
     padding: theme.spacing.xl,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 200,
   },
   addGroupText: {
@@ -403,8 +414,8 @@ const styles = StyleSheet.create((theme) => ({
   },
   errorContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   errorText: {
     fontSize: theme.typography.fontSize.lg,
@@ -412,8 +423,8 @@ const styles = StyleSheet.create((theme) => ({
   },
   emptyState: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: theme.spacing.md,
   },
   emptyTitle: {
@@ -424,7 +435,7 @@ const styles = StyleSheet.create((theme) => ({
   emptySubtitle: {
     fontSize: theme.typography.fontSize.base,
     color: theme.colors.gray500,
-    textAlign: "center",
+    textAlign: 'center',
     maxWidth: 300,
   },
   fabContainer: {

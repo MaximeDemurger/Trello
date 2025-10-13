@@ -30,6 +30,7 @@ export const BoardListScreen: React.FC = () => {
 
   // React Query hooks
   const { data: boards = [], isLoading, error } = useBoards();
+  const upsertBoardFromRemote = useBoardStore((state) => state.upsertBoardFromRemote);
   const createBoardMutation = useCreateBoard();
 
   // Fetch default organization
@@ -46,16 +47,19 @@ export const BoardListScreen: React.FC = () => {
       } catch (e) {
         console.error('Failed to fetch organizations:', e);
       } finally {
-        setTimeout(() => {
-          setHasOrganization(false);
-          setIsOrgLoading(false);
-        }, 1000);
+        setIsOrgLoading(false);
       }
     })();
   }, [user?.id]);
 
-  const handleBoardPress = (boardId: string) => {
-    navigation.navigate('BoardDetail', { boardId });
+  const handleBoardPress = (board: BoardWithStats) => {
+    upsertBoardFromRemote({
+      id: board.id,
+      title: board.title,
+      description: board.description ?? null,
+      color: board.color ?? null,
+    });
+    navigation.navigate('BoardDetail', { boardId: board.id });
   };
 
   const handleCreateBoard = async () => {
@@ -157,7 +161,7 @@ export const BoardListScreen: React.FC = () => {
     return (
       <Pressable
         key={board.id}
-        onPress={() => handleBoardPress(board.id)}
+        onPress={() => handleBoardPress(board)}
         style={({ pressed }) => [styles.boardCard, pressed && { opacity: 0.9 }]}
       >
         {/* Header: Icon + Title + Menu */}
@@ -345,6 +349,16 @@ export const BoardListScreen: React.FC = () => {
                     <Ionicons name="business-outline" size={14} color="#374151" />
                     <Text style={styles.filterButtonText}>New Org</Text>
                   </Pressable>
+
+                  {defaultOrganizationId && (
+                    <Pressable
+                      onPress={() => navigation.navigate('ManageOrganization', { organizationId: defaultOrganizationId })}
+                      style={({ pressed }) => [styles.filterButton, pressed && { opacity: 0.9 }]}
+                    >
+                      <Ionicons name="settings-outline" size={14} color="#374151" />
+                      <Text style={styles.filterButtonText}>Manage Org</Text>
+                    </Pressable>
+                  )}
                 </View>
 
                 {/* Boards List */}

@@ -10,4 +10,7 @@ export { SignupScreen } from './SignupScreen/SignupScreen'
 export { NotificationsScreen } from './NotificationsScreen/NotificationsScreen'
 export { SearchScreen } from './SearchScreen/SearchScreen'
 export { AccountScreen } from './AccountScreen/AccountScreen'
+export { ManageOrganizationScreen } from './ManageOrganizationScreen/ManageOrganizationScreen'
+export { BoardSettingsScreen } from './BoardSettingsScreen/BoardSettingsScreen'
+export { BoardMembersScreen } from './BoardMembersScreen/BoardMembersScreen'
 

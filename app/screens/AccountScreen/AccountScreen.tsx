@@ -14,10 +14,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getUserBoardStats } from '@/lib/boards';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import type { RootStackParamList } from '@/navigation/AppNavigator';
 
 export const AccountScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
   const { user, profile, signOut, updateProfile } = useAuth();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [displayName, setDisplayName] = useState(profile?.display_name ?? '');
   const [jobTitle, setJobTitle] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -168,7 +171,22 @@ export const AccountScreen: React.FC = () => {
       {/* Organization actions */}
       <View style={styles.sectionCard}>
         <Text style={styles.sectionTitle}>Organization</Text>
-        <Pressable style={styles.actionRow}>
+        <Pressable
+          style={styles.actionRow}
+          onPress={() => {
+            const orgId = organizations?.[0]?.id
+            if (orgId) {
+              // Navigate into nested Boards stack screen
+              // @ts-expect-error nested navigation
+              navigation.navigate('Boards', {
+                screen: 'ManageOrganization',
+                params: { organizationId: orgId },
+              })
+            } else {
+              Alert.alert('No organization', 'Create an organization first to manage it.')
+            }
+          }}
+        >
           <View style={[styles.actionIcon, { backgroundColor: 'rgba(99,102,241,0.1)' }]}>
             <MaterialCommunityIcons name="view-dashboard" size={16} color={'rgb(99,102,241)'} />
           </View>

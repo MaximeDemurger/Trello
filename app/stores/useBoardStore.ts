@@ -26,6 +26,7 @@ interface BoardState {
 
 interface BoardActions {
   createBoard: (input: CreateBoardInput) => Board;
+  upsertBoardFromRemote: (input: { id: string; title: string; description: string | null; color: string | null }) => void;
   deleteBoard: (boardId: string) => void;
   updateBoard: (boardId: string, updates: Partial<Board>) => void;
   createMember: (input: { name: string; email?: string }) => Member;
@@ -161,6 +162,30 @@ export const useBoardStore = create<BoardStore>()(
         }));
 
         return board;
+      },
+
+      upsertBoardFromRemote: (input) => {
+        const { id, title, description, color } = input;
+        const now = generateTimestamp();
+        set((state) => {
+          const exists = state.boards.some((b) => b.id === id);
+          if (exists) {
+            return {
+              boards: state.boards.map((b) =>
+                b.id === id ? { ...b, title, description: description ?? undefined, color: color ?? undefined, updatedAt: now } : b
+              ),
+            };
+          }
+          const newBoard: Board = {
+            id,
+            title,
+            description: description ?? undefined,
+            color: color ?? BOARD_COLORS[Math.floor(Math.random() * BOARD_COLORS.length)],
+            createdAt: now,
+            updatedAt: now,
+          };
+          return { boards: [...state.boards, newBoard] };
+        });
       },
 
       deleteBoard: (boardId) => {

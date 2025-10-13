@@ -151,6 +151,36 @@ export async function createBoard(params: { organizationId: string; title: strin
   return { board: data as BoardRow }
 }
 
+export async function updateBoard(params: { id: string; title?: string; description?: string | null; color?: string | null }) {
+  const { id, title, description, color } = params
+  const updates: any = {}
+  if (typeof title !== 'undefined') updates.title = title
+  if (typeof description !== 'undefined') updates.description = description
+  if (typeof color !== 'undefined') updates.color = color
+  const { data, error } = await supabase
+    .from('boards')
+    .update(updates)
+    .eq('id', id)
+    .select('*')
+    .maybeSingle()
+  if (error) return { error: error.message }
+  return { board: data as BoardRow }
+}
+
+export async function fetchBoardById(boardId: string): Promise<{
+  board?: { id: string; title: string; description: string | null; color: string | null; organization_id: string }
+  error?: string
+}> {
+  const { data, error } = await supabase
+    .from('boards')
+    .select('id, title, description, color, organization_id')
+    .eq('id', boardId)
+    .maybeSingle()
+  if (error) return { error: error.message }
+  if (!data) return { error: 'Board not found' }
+  return { board: data as any }
+}
+
 export async function searchBoardsForUser(params: { userId: string; query: string }) {
   const { userId, query } = params
   const orgIds = (

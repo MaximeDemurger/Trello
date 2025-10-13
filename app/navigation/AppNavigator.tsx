@@ -10,7 +10,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuth } from '@/providers/AuthProvider'
-import { BoardListScreen, BoardDetailScreen, OnboardingScreen, AuthScreen, SignupScreen, NotificationsScreen, SearchScreen, AccountScreen } from '@/screens'
+import { BoardListScreen, BoardDetailScreen, OnboardingScreen, AuthScreen, SignupScreen, NotificationsScreen, SearchScreen, AccountScreen, ManageOrganizationScreen, BoardSettingsScreen, BoardMembersScreen } from '@/screens'
 
 export type RootStackParamList = {
   // Auth flow
@@ -20,6 +20,9 @@ export type RootStackParamList = {
   // Boards stack
   BoardList: undefined
   BoardDetail: { boardId: string }
+  ManageOrganization: { organizationId: string }
+  BoardSettings: { boardId: string }
+  BoardMembers: { boardId: string }
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -33,6 +36,9 @@ const BoardsStack: React.FC = () => {
     >
       <Stack.Screen name="BoardList" component={BoardListScreen} />
       <Stack.Screen name="BoardDetail" component={BoardDetailScreen} />
+      <Stack.Screen name="ManageOrganization" component={ManageOrganizationScreen} />
+      <Stack.Screen name="BoardSettings" component={BoardSettingsScreen} />
+      <Stack.Screen name="BoardMembers" component={BoardMembersScreen} />
     </Stack.Navigator>
   )
 }

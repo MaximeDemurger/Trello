@@ -31,6 +31,70 @@ export async function createOrganization(params: { name: string; userId: string 
   return { organization: org }
 }
 
+export async function fetchOrganizationById(organizationId: string) {
+  const { data, error } = await supabase
+    .from('organizations')
+    .select('*')
+    .eq('id', organizationId)
+    .maybeSingle()
+  if (error) return { error: error.message }
+  return { organization: (data as Organization) ?? null }
+}
+
+export async function updateOrganization(params: { organizationId: string; name: string }) {
+  const { organizationId, name } = params
+  const { data, error } = await supabase
+    .from('organizations')
+    .update({ name })
+    .eq('id', organizationId)
+    .select('*')
+    .maybeSingle()
+  if (error) return { error: error.message }
+  return { organization: data as Organization }
+}
+
+export type OrganizationMemberWithProfile = OrganizationMember & {
+  profile: {
+    id: string
+    username: string | null
+    display_name: string | null
+    avatar_url: string | null
+  }
+}
+
+export async function fetchOrganizationMembers(organizationId: string) {
+  const { data: rows, error } = await supabase
+    .from('organization_members')
+    .select('organization_id, user_id, role, created_at')
+    .eq('organization_id', organizationId)
+  if (error) return { error: error.message }
+  const memberIds = (rows ?? []).map((r: any) => r.user_id)
+  if (memberIds.length === 0) return { members: [] as OrganizationMemberWithProfile[] }
+  const { data: profiles, error: profErr } = await supabase
+    .from('profiles')
+    .select('id, username, display_name, avatar_url')
+    .in('id', memberIds)
+  if (profErr) return { error: profErr.message }
+  const members = (rows ?? []).map((r: any) => ({
+    organization_id: r.organization_id,
+    user_id: r.user_id,
+    role: r.role,
+    created_at: r.created_at,
+    profile: profiles?.find((p: any) => p.id === r.user_id) ?? null,
+  })) as OrganizationMemberWithProfile[]
+  return { members }
+}
+
+export async function fetchOrganizationInvites(organizationId: string) {
+  const { data, error } = await supabase
+    .from('organization_invites')
+    .select('*, organizations(name)')
+    .eq('organization_id', organizationId)
+    .order('created_at', { ascending: false })
+  if (error) return { error: error.message }
+  return { invites: data || [] }
+}
+
 export async function fetchUserOrganizations(userId: string) {
   const { data, error } = await supabase
     .from('organization_members')
